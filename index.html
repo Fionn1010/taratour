@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hill of Tara Tour</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #131313;
+      --panel-2: #1c1c1c;
+      --panel-3: #232323;
+      --text: #f4f4f4;
+      --muted: #b9b9b9;
+      --gold: #c9a227;
+      --gold-2: #e1c15f;
+      --danger: #ff6b6b;
+      --ok: #5ee28d;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 12px 38px rgba(0,0,0,0.32);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, #000 0%, #080808 38%, #0b0b0b 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: calc(20px + env(safe-area-inset-top)) 20px calc(40px + env(safe-area-inset-bottom));
+    }
+    .hero {
+      padding-top: 18px;
+      text-align: center;
+    }
+    .title {
+      font-size: clamp(2.1rem, 8vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.02;
+      margin: 0 0 10px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.04rem;
+      margin: 0 auto 22px;
+      max-width: 560px;
+      line-height: 1.45;
+    }
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 18px;
+      padding: 16px 22px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.12s ease, opacity 0.12s ease, background 0.2s ease;
+    }
+    .btn:active { transform: scale(0.99); }
+    .btn-primary {
+      background: linear-gradient(180deg, var(--gold-2), var(--gold));
+      color: #151515;
+      box-shadow: 0 8px 30px rgba(201, 162, 39, 0.25);
+    }
+    .btn-primary[disabled] {
+      opacity: 0.48;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-secondary {
+      background: #202020;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px dashed rgba(255,255,255,0.16);
+    }
+    .stack { display: grid; gap: 14px; }
+    .card {
+      margin-top: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      line-height: 1.1;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.55;
+      margin: 0 0 12px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #777;
+      display: inline-block;
+    }
+    .dot.ok { background: var(--ok); }
+    .dot.warn { background: var(--gold-2); }
+    .dot.err { background: var(--danger); }
+    .grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .row:last-child { border-bottom: 0; }
+    .label { color: var(--muted); font-size: 0.95rem; }
+    .value { text-align: right; font-weight: 700; font-size: 0.98rem; }
+    .small { color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+    .tiny { color: #979797; font-size: 0.82rem; line-height: 1.45; }
+    .two-col {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+    .mini-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .mini-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+    .stop-list {
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+    }
+    .stop {
+      background: var(--panel-2);
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+    }
+    .stop strong { display: block; margin-bottom: 4px; }
+    .stop.active {
+      border-color: rgba(201, 162, 39, 0.5);
+      box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.2);
+    }
+    .stop.done {
+      border-color: rgba(94,226,141,0.35);
+      background: linear-gradient(180deg, rgba(94,226,141,0.08), rgba(94,226,141,0.02));
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: rgba(255,255,255,0.07);
+    }
+    .badge.ok { background: rgba(94,226,141,0.14); color: #bcf6d0; }
+    .badge.gold { background: rgba(201,162,39,0.14); color: #f1dc8a; }
+    details {
+      margin-top: 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+    summary { cursor: pointer; font-weight: 700; }
+    .notice {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(201, 162, 39, 0.25);
+      background: rgba(201, 162, 39, 0.08);
+      color: #f8e6a7;
+      line-height: 1.45;
+    }
+    .compass-wrap {
+      display: grid;
+      place-items: center;
+      margin-top: 10px;
+    }
+    .compass {
+      width: 148px;
+      height: 148px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: radial-gradient(circle at center, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+      position: relative;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .compass-ring {
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.09);
+    }
+    .arrow {
+      width: 18px;
+      height: 68px;
+      background: linear-gradient(180deg, var(--gold-2), var(--gold));
+      clip-path: polygon(50% 0%, 100% 38%, 67% 38%, 67% 100%, 33% 100%, 33% 38%, 0% 38%);
+      transform-origin: 50% 84%;
+      transform: rotate(0deg);
+      box-shadow: 0 0 20px rgba(201,162,39,0.3);
+      transition: transform 0.25s ease;
+    }
+    .compass-labels {
+      position: absolute;
+      inset: 0;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .compass-labels span { position: absolute; }
+    .north { top: 8px; left: 50%; transform: translateX(-50%); }
+    .east { right: 9px; top: 50%; transform: translateY(-50%); }
+    .south { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .west { left: 9px; top: 50%; transform: translateY(-50%); }
+    .progress {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .progress-step {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .progress-step.active { background: var(--gold); }
+    .progress-step.done { background: var(--ok); }
+    .hidden { display: none !important; }
+    .footer-space { height: 20px; }
+    @media (max-width: 720px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1 class="title">Hill of Tara</h1>
+      <p class="subtitle">Walk the ancient landscape and unlock stories as you move through Tara.</p>
+      <button id="beginBtn" class="btn btn-primary" disabled>Travel to Tara to Begin</button>
+      <p class="tiny" style="margin-top:10px;">This version is for tour logic testing. Payment can be added later.</p>
+    </div>
+
+    <section class="card">
+      <div id="statusPill" class="status-pill"><span class="dot warn"></span><span>Looking for your location…</span></div>
+      <h2 id="headline">Checking your GPS</h2>
+      <p id="message" class="lead">Please allow location access. Once your position is found, this page will show whether you are at Tara, which stop is nearest, and what unlocks next.</p>
+
+      <div class="grid" id="debugGrid">
+        <div class="row"><div class="label">Latitude</div><div class="value" id="latVal">—</div></div>
+        <div class="row"><div class="label">Longitude</div><div class="value" id="lonVal">—</div></div>
+        <div class="row"><div class="label">Accuracy</div><div class="value" id="accVal">—</div></div>
+        <div class="row"><div class="label">Nearest stop</div><div class="value" id="nearestVal">—</div></div>
+        <div class="row"><div class="label">Distance to nearest stop</div><div class="value" id="distanceVal">—</div></div>
+        <div class="row"><div class="label">Current target</div><div class="value" id="targetVal">—</div></div>
+        <div class="row"><div class="label">Distance to target</div><div class="value" id="targetDistanceVal">—</div></div>
+        <div class="row"><div class="label">Trigger radius</div><div class="value" id="radiusVal">—</div></div>
+        <div class="row"><div class="label">Status</div><div class="value" id="zoneVal">—</div></div>
+      </div>
+
+      <div class="stack" style="margin-top:16px;">
+        <button id="retryBtn" class="btn btn-secondary">Retry GPS</button>
+        <button id="devBtn" class="btn btn-secondary">Developer Mode: Simulate Current Stop</button>
+        <button id="nextDevBtn" class="btn btn-ghost">Developer Mode: Jump to Next Stop</button>
+      </div>
+
+      <div class="notice" id="coordNotice">
+        These stop coordinates are a development starting point. Fine-tune each stop on site at Tara with your own phone before launch.
+      </div>
+    </section>
+
+    <section class="card" id="tourPanel">
+      <div class="status-pill"><span class="dot ok"></span><span>Tour engine active</span></div>
+      <h2 id="tourStopTitle">Your current target</h2>
+      <p id="tourStopText" class="lead">Walk toward the next stop to unlock it.</p>
+
+      <div class="two-col">
+        <div class="mini-card">
+          <h3>Current stop</h3>
+          <p id="currentStopSummary" class="small">No stop unlocked yet.</p>
+          <button class="btn btn-primary" id="playStopBtn" disabled>Open current stop</button>
+          <p class="tiny" style="margin-top:10px;">This currently opens a built-in story card. Later you can swap it for a video or dedicated stop page.</p>
+        </div>
+
+        <div class="mini-card">
+          <h3>Walk direction</h3>
+          <div class="compass-wrap">
+            <div class="compass">
+              <div class="compass-ring"></div>
+              <div class="compass-labels">
+                <span class="north">N</span>
+                <span class="east">E</span>
+                <span class="south">S</span>
+                <span class="west">W</span>
+              </div>
+              <div id="arrow" class="arrow"></div>
+            </div>
+          </div>
+          <p id="directionText" class="small" style="text-align:center; margin-top:12px;">Direction guidance will appear here.</p>
+          <button class="btn btn-secondary" id="compassBtn" style="margin-top:8px;">Enable Direction Sensor</button>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="mini-card">
+          <h3>Next stop</h3>
+          <p id="nextStopSummary" class="small">We will show the next stop after the current one unlocks.</p>
+        </div>
+        <div class="mini-card">
+          <h3>Your progress</h3>
+          <div id="progressBar" class="progress"></div>
+          <p id="progressText" class="small" style="margin-top:12px;">0 of 7 stops unlocked.</p>
+          <button class="btn btn-ghost" id="resetProgressBtn" style="margin-top:8px;">Reset Tour Progress</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="storyPanel">
+      <div class="status-pill"><span class="dot ok"></span><span>Stop content preview</span></div>
+      <h2 id="storyTitle">Stop preview</h2>
+      <p id="storyBody" class="lead">When you unlock a stop, its story will appear here. Later you can replace this with video.</p>
+    </section>
+
+    <section class="card">
+      <details open>
+        <summary>Tour stops used by this page</summary>
+        <div class="stop-list" id="stopList"></div>
+      </details>
+    </section>
+
+    <div class="footer-space"></div>
+  </div>
+
+  <script>
+    const TARA_STOPS = [
+      {
+        id: 'entrance',
+        name: 'Entrance / Welcome',
+        lat: 53.58062,
+        lon: -6.61088,
+        radius: 60,
+        story: 'Welcome to the Hill of Tara. This is the ancient ceremonial heart of Ireland, where myth, kingship and memory all meet in one landscape.',
+        unlockText: 'You are at the entrance. This is where the visitor journey begins.',
+        nextHint: 'Walk uphill toward St. Patrick’s Church and statue.'
+      },
+      {
+        id: 'church',
+        name: 'St. Patrick’s Church & Statue',
+        lat: 53.58044,
+        lon: -6.61024,
+        radius: 45,
+        story: 'Tradition says Patrick challenged the old religious order by lighting the Paschal fire at nearby Slane, a flame seen from Tara itself.',
+        unlockText: 'You have reached the St. Patrick stop.',
+        nextHint: 'Continue to the Banqueting Hall viewpoint.'
+      },
+      {
+        id: 'banqueting',
+        name: 'Banqueting Hall Viewpoint',
+        lat: 53.58224,
+        lon: -6.61136,
+        radius: 55,
+        story: 'The Banqueting Hall stretches dramatically across the ridge, a visible reminder that Tara was associated with feasting, assembly and royal ceremony.',
+        unlockText: 'You are at the Banqueting Hall viewpoint.',
+        nextHint: 'Walk back toward the Rath of the Synods.'
+      },
+      {
+        id: 'synods',
+        name: 'Rath of the Synods',
+        lat: 53.58003,
+        lon: -6.61219,
+        radius: 35,
+        story: 'This enclosure became famous after the discovery of the Lia Fáil nearby, and later excavations revealed a site of major ritual and symbolic importance.',
+        unlockText: 'You are inside the Rath of the Synods zone.',
+        nextHint: 'Head toward the Mound of the Hostages.'
+      },
+      {
+        id: 'hostages',
+        name: 'Mound of the Hostages',
+        lat: 53.57974,
+        lon: -6.61175,
+        radius: 30,
+        story: 'This ancient passage tomb is thousands of years older than the kings of Tara and shows that the hill was sacred long before recorded history.',
+        unlockText: 'You have reached the Mound of the Hostages.',
+        nextHint: 'Move on to Teach Cormaic.'
+      },
+      {
+        id: 'cormac',
+        name: 'Teach Cormaic',
+        lat: 53.57955,
+        lon: -6.61123,
+        radius: 30,
+        story: 'Teach Cormaic is linked in tradition with the great king Cormac mac Airt and represents Tara’s association with royal authority and legendary rule.',
+        unlockText: 'You are at Teach Cormaic.',
+        nextHint: 'Walk a little farther to the Lia Fáil.'
+      },
+      {
+        id: 'liafail',
+        name: 'Lia Fáil / Stone of Destiny',
+        lat: 53.57948,
+        lon: -6.61105,
+        radius: 25,
+        story: 'The Lia Fáil, or Stone of Destiny, was said to roar when touched by the rightful king. This is the emotional climax of the Tara story.',
+        unlockText: 'You have reached the Stone of Destiny.',
+        nextHint: 'Tour complete. This is the final stop.'
+      }
+    ];
+
+    const STORAGE_KEY = 'taraTourVisitedV2';
+
+    const beginBtn = document.getElementById('beginBtn');
+    const retryBtn = document.getElementById('retryBtn');
+    const devBtn = document.getElementById('devBtn');
+    const nextDevBtn = document.getElementById('nextDevBtn');
+    const playStopBtn = document.getElementById('playStopBtn');
+    const compassBtn = document.getElementById('compassBtn');
+    const resetProgressBtn = document.getElementById('resetProgressBtn');
+
+    const statusPill = document.getElementById('statusPill');
+    const headline = document.getElementById('headline');
+    const message = document.getElementById('message');
+    const latVal = document.getElementById('latVal');
+    const lonVal = document.getElementById('lonVal');
+    const accVal = document.getElementById('accVal');
+    const nearestVal = document.getElementById('nearestVal');
+    const distanceVal = document.getElementById('distanceVal');
+    const targetVal = document.getElementById('targetVal');
+    const targetDistanceVal = document.getElementById('targetDistanceVal');
+    const radiusVal = document.getElementById('radiusVal');
+    const zoneVal = document.getElementById('zoneVal');
+    const stopList = document.getElementById('stopList');
+
+    const tourPanel = document.getElementById('tourPanel');
+    const tourStopTitle = document.getElementById('tourStopTitle');
+    const tourStopText = document.getElementById('tourStopText');
+    const currentStopSummary = document.getElementById('currentStopSummary');
+    const nextStopSummary = document.getElementById('nextStopSummary');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const directionText = document.getElementById('directionText');
+    const storyTitle = document.getElementById('storyTitle');
+    const storyBody = document.getElementById('storyBody');
+    const arrow = document.getElementById('arrow');
+
+    let visitedStops = loadVisitedStops();
+    let activeStop = null;
+    let currentTarget = null;
+    let currentPosition = null;
+    let currentHeading = null;
+    let lastUnlockedStopId = null;
+
+    function loadVisitedStops() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveVisitedStops() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(visitedStops));
+    }
+
+    function setPill(type, text) {
+      const klass = type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'warn';
+      statusPill.innerHTML = `<span class="dot ${klass}"></span><span>${text}</span>`;
+    }
+
+    function toRad(value) { return value * Math.PI / 180; }
+    function toDeg(value) { return value * 180 / Math.PI; }
+
+    function haversineMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function bearingDegrees(lat1, lon1, lat2, lon2) {
+      const phi1 = toRad(lat1);
+      const phi2 = toRad(lat2);
+      const lambda1 = toRad(lon1);
+      const lambda2 = toRad(lon2);
+      const y = Math.sin(lambda2 - lambda1) * Math.cos(phi2);
+      const x = Math.cos(phi1) * Math.sin(phi2) -
+        Math.sin(phi1) * Math.cos(phi2) * Math.cos(lambda2 - lambda1);
+      return (toDeg(Math.atan2(y, x)) + 360) % 360;
+    }
+
+    function cardinalDirection(deg) {
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      return dirs[Math.round(deg / 45) % 8];
+    }
+
+    function formatDistance(meters) {
+      if (!Number.isFinite(meters)) return '—';
+      if (meters < 1000) return `${Math.round(meters)} m`;
+      return `${(meters / 1000).toFixed(1)} km`;
+    }
+
+    function getStopIndex(stopId) {
+      return TARA_STOPS.findIndex(stop => stop.id === stopId);
+    }
+
+    function getCurrentTargetStop() {
+      for (const stop of TARA_STOPS) {
+        if (!visitedStops.includes(stop.id)) return stop;
+      }
+      return null;
+    }
+
+    function nearestStopFor(lat, lon) {
+      let best = null;
+      for (const stop of TARA_STOPS) {
+        const distance = haversineMeters(lat, lon, stop.lat, stop.lon);
+        if (!best || distance < best.distance) best = { ...stop, distance };
+      }
+      return best;
+    }
+
+    function unlockStop(stop) {
+      if (!stop || visitedStops.includes(stop.id)) return false;
+      visitedStops.push(stop.id);
+      saveVisitedStops();
+      lastUnlockedStopId = stop.id;
+      if (navigator.vibrate) navigator.vibrate([140, 70, 180]);
+      storyTitle.textContent = stop.name;
+      storyBody.textContent = stop.story;
+      return true;
+    }
+
+    function renderStops(activeId = null) {
+      stopList.innerHTML = TARA_STOPS.map((stop, index) => {
+        const done = visitedStops.includes(stop.id);
+        const isActive = stop.id === activeId;
+        const badge = done
+          ? '<span class="badge ok">Unlocked</span>'
+          : getCurrentTargetStop()?.id === stop.id
+            ? '<span class="badge gold">Current target</span>'
+            : '';
+        return `
+          <div class="stop ${done ? 'done' : ''} ${isActive ? 'active' : ''}">
+            <strong>${index + 1}. ${stop.name}</strong>
+            <div class="small">Lat ${stop.lat.toFixed(5)}, Lon ${stop.lon.toFixed(5)} · Radius ${stop.radius}m</div>
+            ${badge}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderProgress() {
+      progressBar.innerHTML = TARA_STOPS.map(stop => {
+        const isDone = visitedStops.includes(stop.id);
+        const isActive = !isDone && getCurrentTargetStop()?.id === stop.id;
+        return `<span class="progress-step ${isDone ? 'done' : isActive ? 'active' : ''}"></span>`;
+      }).join('');
+      progressText.textContent = `${visitedStops.length} of ${TARA_STOPS.length} stops unlocked.`;
+    }
+
+    function updateDirectionUI() {
+      if (!currentPosition || !currentTarget) {
+        arrow.style.transform = 'rotate(0deg)';
+        directionText.textContent = 'Direction guidance will appear here.';
+        return;
+      }
+
+      const bearing = bearingDegrees(
+        currentPosition.lat,
+        currentPosition.lon,
+        currentTarget.lat,
+        currentTarget.lon
+      );
+
+      const arrowRotation = currentHeading == null ? bearing : (bearing - currentHeading + 360) % 360;
+      arrow.style.transform = `rotate(${arrowRotation}deg)`;
+
+      const distance = haversineMeters(
+        currentPosition.lat,
+        currentPosition.lon,
+        currentTarget.lat,
+        currentTarget.lon
+      );
+
+      if (currentHeading == null) {
+        directionText.textContent = `Target lies roughly ${cardinalDirection(bearing)} · ${formatDistance(distance)} away. Enable the direction sensor for a live arrow.`;
+      } else {
+        directionText.textContent = `Arrow points toward ${currentTarget.name} · ${formatDistance(distance)} away.`;
+      }
+    }
+
+    function updateTourPanels(targetDistance, insideTarget) {
+      tourPanel.classList.remove('hidden');
+      const currentTargetIndex = currentTarget ? getStopIndex(currentTarget.id) + 1 : TARA_STOPS.length;
+      const lastUnlockedStop = lastUnlockedStopId ? TARA_STOPS.find(s => s.id === lastUnlockedStopId) : null;
+      const nextStop = getCurrentTargetStop();
+
+      if (insideTarget && activeStop) {
+        tourStopTitle.textContent = `Unlocked: ${activeStop.name}`;
+        tourStopText.textContent = `${activeStop.unlockText} ${activeStop.nextHint}`;
+        currentStopSummary.textContent = `${activeStop.name} is unlocked. You can open its content now.`;
+        playStopBtn.disabled = false;
+        beginBtn.disabled = false;
+        beginBtn.textContent = `Open ${activeStop.name}`;
+      } else if (nextStop) {
+        tourStopTitle.textContent = `Walk to stop ${currentTargetIndex}`;
+        tourStopText.textContent = `Your current target is ${nextStop.name}. Walk into its trigger zone to unlock it.`;
+        currentStopSummary.textContent = lastUnlockedStop
+          ? `Last unlocked: ${lastUnlockedStop.name}.`
+          : 'No stop unlocked yet. Start by reaching the entrance.';
+        playStopBtn.disabled = !lastUnlockedStop;
+        beginBtn.disabled = true;
+        beginBtn.textContent = 'Travel to Tara to Begin';
+      } else {
+        tourStopTitle.textContent = 'Tour complete';
+        tourStopText.textContent = 'All stops are unlocked. You now have the full tour flow working.';
+        currentStopSummary.textContent = 'All seven stops have been unlocked on this device.';
+        playStopBtn.disabled = false;
+        beginBtn.disabled = false;
+        beginBtn.textContent = 'View Final Stop';
+      }
+
+      if (nextStop) {
+        nextStopSummary.textContent = `${nextStop.name} is next. ${targetDistance != null ? `Distance: ${formatDistance(targetDistance)}.` : ''} ${nextStop.nextHint}`;
+      } else {
+        nextStopSummary.textContent = 'There is no next stop. The tour sequence is complete.';
+      }
+    }
+
+    function updateUIFromPosition(lat, lon, accuracy, source = 'gps') {
+      currentPosition = { lat, lon, accuracy, source };
+      latVal.textContent = lat.toFixed(6);
+      lonVal.textContent = lon.toFixed(6);
+      accVal.textContent = `${Math.round(accuracy)} m${source === 'dev' ? ' (simulated)' : ''}`;
+
+      const nearest = nearestStopFor(lat, lon);
+      currentTarget = getCurrentTargetStop();
+      const targetDistance = currentTarget ? haversineMeters(lat, lon, currentTarget.lat, currentTarget.lon) : 0;
+      const insideTarget = currentTarget ? targetDistance <= currentTarget.radius : false;
+
+      nearestVal.textContent = nearest.name;
+      distanceVal.textContent = formatDistance(nearest.distance);
+      targetVal.textContent = currentTarget ? currentTarget.name : 'All stops complete';
+      targetDistanceVal.textContent = currentTarget ? formatDistance(targetDistance) : '—';
+      radiusVal.textContent = currentTarget ? `${currentTarget.radius} m` : '—';
+      activeStop = insideTarget ? currentTarget : null;
+
+      if (insideTarget && currentTarget) {
+        const wasNew = unlockStop(currentTarget);
+        currentTarget = getCurrentTargetStop();
+        setPill('ok', wasNew ? 'Stop unlocked' : 'Inside active stop zone');
+        headline.textContent = wasNew ? 'Tour stop unlocked' : 'You are inside a Tara stop zone';
+        message.textContent = wasNew
+          ? `${nearest.name} unlocked successfully. You can open the stop content below.`
+          : `You are inside the zone for ${nearest.name}.`;
+        zoneVal.textContent = 'Inside target trigger zone';
+        storyTitle.textContent = nearest.name;
+        storyBody.textContent = nearest.story;
+      } else if (nearest.distance <= nearest.radius) {
+        setPill('warn', 'Inside a Tara zone, but out of sequence');
+        headline.textContent = 'You found a stop, but not the current target';
+        message.textContent = `You are standing near ${nearest.name}, but the tour is currently guiding you to ${currentTarget ? currentTarget.name : 'the next stop'}. This keeps the story sequence in order.`;
+        zoneVal.textContent = 'Inside non-target stop zone';
+      } else {
+        setPill('warn', 'Location found');
+        headline.textContent = 'You are not at the current Tara stop yet';
+        message.textContent = currentTarget
+          ? `Your location was found successfully. You are ${formatDistance(targetDistance)} from the current target: ${currentTarget.name}.`
+          : 'Your location was found successfully. All Tara stops are already unlocked on this device.';
+        zoneVal.textContent = currentTarget ? 'Outside target trigger zone' : 'Tour complete';
+      }
+
+      updateTourPanels(currentTarget ? haversineMeters(lat, lon, currentTarget.lat, currentTarget.lon) : null, insideTarget);
+      renderProgress();
+      renderStops(activeStop?.id || nearest.id);
+      updateDirectionUI();
+    }
+
+    function handleGeolocationSuccess(position) {
+      const { latitude, longitude, accuracy } = position.coords;
+      updateUIFromPosition(latitude, longitude, accuracy, 'gps');
+    }
+
+    function handleGeolocationError(error) {
+      setPill('err', 'GPS unavailable');
+      headline.textContent = 'We could not get your location';
+      beginBtn.disabled = true;
+      playStopBtn.disabled = true;
+      zoneVal.textContent = 'GPS error';
+
+      const messages = {
+        1: 'Location permission was denied. Please allow location access in your browser settings and try again.',
+        2: 'Your location could not be determined right now. Try moving outside or retrying.',
+        3: 'Location request timed out. Try again in a few seconds.'
+      };
+      message.textContent = messages[error.code] || 'An unknown GPS error occurred.';
+    }
+
+    function requestLocation() {
+      if (!window.isSecureContext) {
+        setPill('err', 'HTTPS required');
+        headline.textContent = 'Secure site required';
+        message.textContent = 'This page must be opened over HTTPS for GPS to work.';
+        return;
+      }
+      if (!navigator.geolocation) {
+        setPill('err', 'Geolocation unsupported');
+        headline.textContent = 'This browser does not support GPS';
+        message.textContent = 'Try opening the page in a newer mobile browser.';
+        return;
+      }
+
+      setPill('warn', 'Looking for your location…');
+      headline.textContent = 'Checking your GPS';
+      message.textContent = 'Please wait while we read your position.';
+
+      navigator.geolocation.getCurrentPosition(handleGeolocationSuccess, handleGeolocationError, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+    }
+
+    async function enableCompass() {
+      try {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission !== 'granted') {
+            directionText.textContent = 'Direction sensor permission was not granted.';
+            return;
+          }
+        }
+
+        window.addEventListener('deviceorientationabsolute', onOrientation, true);
+        window.addEventListener('deviceorientation', onOrientation, true);
+        directionText.textContent = 'Direction sensor enabled. Move your phone slowly for a steadier arrow.';
+      } catch (error) {
+        directionText.textContent = 'This device did not allow direction sensor access.';
+      }
+    }
+
+    function onOrientation(event) {
+      let heading = null;
+      if (typeof event.webkitCompassHeading === 'number') {
+        heading = event.webkitCompassHeading;
+      } else if (typeof event.alpha === 'number') {
+        heading = (360 - event.alpha) % 360;
+      }
+      if (heading == null) return;
+      currentHeading = heading;
+      updateDirectionUI();
+    }
+
+    function openStop(stop) {
+      if (!stop) return;
+      storyTitle.textContent = stop.name;
+      storyBody.textContent = stop.story;
+      document.getElementById('storyPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    beginBtn.addEventListener('click', () => {
+      if (activeStop) {
+        openStop(activeStop);
+        return;
+      }
+      const lastUnlocked = visitedStops.length ? TARA_STOPS.find(s => s.id === visitedStops[visitedStops.length - 1]) : null;
+      if (lastUnlocked) openStop(lastUnlocked);
+    });
+
+    playStopBtn.addEventListener('click', () => {
+      if (activeStop) {
+        openStop(activeStop);
+        return;
+      }
+      const lastUnlocked = visitedStops.length ? TARA_STOPS.find(s => s.id === visitedStops[visitedStops.length - 1]) : null;
+      if (lastUnlocked) openStop(lastUnlocked);
+    });
+
+    retryBtn.addEventListener('click', requestLocation);
+    compassBtn.addEventListener('click', enableCompass);
+
+    devBtn.addEventListener('click', () => {
+      const target = getCurrentTargetStop() || TARA_STOPS[TARA_STOPS.length - 1];
+      updateUIFromPosition(target.lat, target.lon, 3, 'dev');
+    });
+
+    nextDevBtn.addEventListener('click', () => {
+      const target = getCurrentTargetStop();
+      if (!target) return;
+      const idx = getStopIndex(target.id);
+      const simulated = TARA_STOPS[Math.min(idx + 1, TARA_STOPS.length - 1)];
+      updateUIFromPosition(simulated.lat, simulated.lon, 3, 'dev');
+    });
+
+    resetProgressBtn.addEventListener('click', () => {
+      visitedStops = [];
+      saveVisitedStops();
+      lastUnlockedStopId = null;
+      currentHeading = null;
+      storyTitle.textContent = 'Stop preview';
+      storyBody.textContent = 'When you unlock a stop, its story will appear here. Later you can replace this with video.';
+      renderProgress();
+      renderStops();
+      requestLocation();
+    });
+
+    renderProgress();
+    renderStops();
+    requestLocation();
+  </script>
+</body>
+</html>
