@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara Tour – GPS Fixed</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0f172a, #020617);
+      color: #fff;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.28);
+    }
+    h1,h2,h3 { margin-top: 0; }
+    p { line-height: 1.5; }
+    .muted { color: #cbd5e1; }
+    .status { color: #bfdbfe; min-height: 1.5em; margin-top: 10px; }
+    .coords { font-family: monospace; color: #cbd5e1; word-break: break-word; }
+    .buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+    button {
+      border: 0; border-radius: 999px; padding: 12px 16px; font-size: 16px; cursor: pointer;
+    }
+    .primary { background:#22c55e; color:#052e16; font-weight:bold; }
+    .secondary { background:#e2e8f0; color:#0f172a; }
+    .danger { background:#f87171; color:#450a0a; }
+    .video-shell { border-radius: 18px; overflow:hidden; background:#000; margin-top:12px; }
+    video { width:100%; display:block; }
+    .now {
+      font-size: 1.15rem; font-weight: bold; color: #fef3c7;
+    }
+    .target {
+      margin-top:8px; color:#fde68a; font-weight:bold;
+    }
+    .stop {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .stop.unlocked {
+      border-color: rgba(34,197,94,0.45);
+      background: rgba(34,197,94,0.08);
+    }
+    .stop.targeted {
+      border-color: rgba(250,204,21,0.55);
+    }
+    .pill {
+      display:inline-block; border-radius:999px; padding:5px 10px; font-size:12px; margin-top:8px; margin-right:8px;
+      background: rgba(255,255,255,0.12);
+    }
+    .green { background: rgba(34,197,94,0.18); }
+    .yellow { background: rgba(250,204,21,0.18); color: #fde68a; }
+    .small { font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Hill of Tara Tour</h1>
+      <p class="muted">This version fixes the GPS flow so the page checks your position immediately and clearly tells you when you are inside a stop radius.</p>
+      <div class="buttons">
+        <button class="primary" onclick="startTour()">Enable GPS Tour</button>
+        <button class="secondary" onclick="checkNow()">Check Position Now</button>
+        <button class="secondary" onclick="playCurrent()">Play Current Stop</button>
+        <button class="danger" onclick="stopTour()">Stop GPS</button>
+      </div>
+      <div id="status" class="status">Ready.</div>
+      <div id="coords" class="coords small"></div>
+    </div>
+
+    <div class="card">
+      <div id="nowPlaying" class="now">Current stop: Entrance / Welcome</div>
+      <div id="targetLabel" class="target">Current target: Entrance / Welcome</div>
+      <p id="description" class="muted">Welcome to the Hill of Tara. Begin your tour here.</p>
+      <div class="video-shell">
+        <video id="tourVideo" controls autoplay muted playsinline>
+          <source id="videoSource" src="video/entrance.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Tour stops used by this page</h2>
+      <div id="stopList"></div>
+    </div>
+  </div>
+
+  <script>
+    const stops = [
+      { id: "entrance",   title: "Entrance / Welcome",              lat: 53.58062, lon: -6.61088, radius: 60, video: "video/entrance.mp4",   description: "Welcome to the Hill of Tara. This is the ancient ceremonial heart of Ireland.", unlocked: false },
+      { id: "patrick",    title: "St. Patrick's Church & Statue",   lat: 53.58044, lon: -6.61024, radius: 45, video: "video/patrick.mp4",    description: "The story of St. Patrick at Tara begins here.", unlocked: false },
+      { id: "banquet",    title: "Banqueting Hall Viewpoint",       lat: 53.58224, lon: -6.61136, radius: 55, video: "video/banqueting.mp4", description: "This viewpoint introduces the Banqueting Hall.", unlocked: false },
+      { id: "synods",     title: "Rath of the Synods",              lat: 53.58003, lon: -6.61219, radius: 35, video: "video/synods.mp4",     description: "The Rath of the Synods and its ritual importance.", unlocked: false },
+      { id: "hostages",   title: "Mound of the Hostages",           lat: 53.57974, lon: -6.61175, radius: 30, video: "video/hostages.mp4",   description: "A much older monument than the royal earthworks around it.", unlocked: false },
+      { id: "cormaic",    title: "Teach Cormaic",                   lat: 53.57984, lon: -6.61136, radius: 30, video: "video/cormaic.mp4",    description: "Teach Cormaic, one of the best-known monuments at Tara.", unlocked: false },
+      { id: "destiny",    title: "Stone of Destiny",                lat: 53.57989, lon: -6.61119, radius: 25, video: "video/destiny.mp4",    description: "The Lia Fáil, associated with the kingship of Tara.", unlocked: false }
+    ];
+
+    let watchId = null;
+    let currentIndex = 0;
+    let lastInside = {};
+
+    const statusEl = document.getElementById("status");
+    const coordsEl = document.getElementById("coords");
+    const stopListEl = document.getElementById("stopList");
+    const nowPlayingEl = document.getElementById("nowPlaying");
+    const targetLabelEl = document.getElementById("targetLabel");
+    const descriptionEl = document.getElementById("description");
+    const videoEl = document.getElementById("tourVideo");
+    const videoSourceEl = document.getElementById("videoSource");
+
+    function renderStops() {
+      const targetId = stops[currentIndex] ? stops[currentIndex].id : null;
+      stopListEl.innerHTML = "";
+      stops.forEach((stop, i) => {
+        const targeted = stop.id === targetId;
+        const div = document.createElement("div");
+        div.className = "stop" + (stop.unlocked ? " unlocked" : "") + (targeted ? " targeted" : "");
+        div.innerHTML = `
+          <div style="font-size: 1.05rem; font-weight: bold;">${i + 1}. ${stop.title}</div>
+          <div class="small muted" style="margin-top:8px;">Lat ${stop.lat.toFixed(5)}, Lon ${stop.lon.toFixed(5)} · Radius ${stop.radius}m</div>
+          ${stop.unlocked ? '<span class="pill green">Unlocked</span>' : ''}
+          ${targeted ? '<span class="pill yellow">Current target</span>' : ''}
+        `;
+        stopListEl.appendChild(div);
+      });
+      targetLabelEl.textContent = "Current target: " + (stops[currentIndex] ? stops[currentIndex].title : "Tour complete");
+    }
+
+    function setCurrentStop(index) {
+      const stop = stops[index];
+      if (!stop) return;
+      nowPlayingEl.textContent = "Current stop: " + stop.title;
+      descriptionEl.textContent = stop.description;
+      videoSourceEl.src = stop.video;
+      videoEl.load();
+      const p = videoEl.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    }
+
+    function playCurrent() {
+      setCurrentStop(currentIndex);
+      statusEl.textContent = "Playing " + stops[currentIndex].title + ".";
+    }
+
+    function startTour() {
+      if (!navigator.geolocation) {
+        statusEl.textContent = "This browser does not support location.";
+        return;
+      }
+      if (watchId !== null) {
+        statusEl.textContent = "GPS is already running.";
+        return;
+      }
+      statusEl.textContent = "Starting GPS…";
+      checkNow();
+      watchId = navigator.geolocation.watchPosition(handlePosition, handleError, {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 2000
+      });
+    }
+
+    function stopTour() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        statusEl.textContent = "GPS stopped.";
+      }
+    }
+
+    function checkNow() {
+      if (!navigator.geolocation) {
+        statusEl.textContent = "This browser does not support location.";
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(handlePosition, handleError, {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 0
+      });
+    }
+
+    function handleError(error) {
+      statusEl.textContent = "GPS error: " + error.message;
+    }
+
+    function handlePosition(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = Math.round(position.coords.accuracy || 0);
+
+      coordsEl.textContent = `Your location: ${lat.toFixed(6)}, ${lon.toFixed(6)} (accuracy ~${accuracy}m)`;
+
+      const target = stops[currentIndex];
+      if (!target) {
+        statusEl.textContent = "Tour complete.";
+        return;
+      }
+
+      const distance = distanceMeters(lat, lon, target.lat, target.lon);
+      const inside = distance <= target.radius;
+
+      if (inside && !lastInside[target.id]) {
+        target.unlocked = true;
+        setCurrentStop(currentIndex);
+        statusEl.textContent = `You have reached ${target.title}. Distance ${Math.round(distance)}m.`;
+        currentIndex = Math.min(currentIndex + 1, stops.length - 1);
+      } else if (inside) {
+        statusEl.textContent = `You are inside the ${target.title} trigger area. Distance ${Math.round(distance)}m.`;
+      } else {
+        statusEl.textContent = `Distance to ${target.title}: ${Math.round(distance)}m.`;
+      }
+
+      lastInside[target.id] = inside;
+      renderStops();
+    }
+
+    function distanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const toRad = d => d * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon/2) ** 2;
+      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    renderStops();
+    setCurrentStop(0);
+  </script>
+</body>
+</html>
