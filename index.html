@@ -1,108 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hill of Tara Tour</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #0f172a, #1e293b);
-      color: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      width: 100%;
-      max-width: 700px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(10px);
-    }
-    h1 { font-size: 2rem; margin-bottom: 10px; text-align: center; }
-    p.subtitle { text-align: center; margin-bottom: 24px; line-height: 1.5; color: #dbeafe; }
-    .video-wrapper { border-radius: 16px; overflow: hidden; background: #000; margin-bottom: 20px; }
-    video { width: 100%; display: block; }
-    .text-box {
-      background: rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
-      padding: 18px;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .button-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    a.button, button {
-      border: none;
-      border-radius: 999px;
-      padding: 12px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .primary { background: #22c55e; color: #082f1a; font-weight: bold; }
-    .secondary { background: #e2e8f0; color: #0f172a; }
-    .status { margin-top: 18px; text-align: center; font-size: 0.95rem; min-height: 1.4em; color: #bfdbfe; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hill of Tara Tour</title>
+
+<style>
+body{
+font-family:Arial, sans-serif;
+background:linear-gradient(180deg,#0f172a,#1e293b);
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:760px;
+background:rgba(255,255,255,0.08);
+border-radius:20px;
+padding:24px;
+text-align:center;
+}
+
+.hero{
+position:relative;
+aspect-ratio:16/9;
+overflow:hidden;
+border-radius:16px;
+margin-bottom:18px;
+}
+
+.hero img{
+position:absolute;
+width:100%;
+height:100%;
+object-fit:cover;
+transition:opacity 1.2s ease;
+}
+
+.hero img.top{
+opacity:0;
+}
+
+.hero.show-ancient img.top{
+opacity:1;
+}
+
+button{
+border:none;
+border-radius:999px;
+padding:12px 20px;
+font-size:16px;
+cursor:pointer;
+margin:6px;
+}
+
+.primary{background:#22c55e;color:#052e16;font-weight:bold;}
+.secondary{background:#e2e8f0;color:#0f172a;}
+.status{margin-top:12px;font-size:14px;color:#bfdbfe;}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Hill of Tara Tour</h1>
-    <p class="subtitle">
-      Welcome to the ancient seat of the High Kings of Ireland. Begin your tour here at the entrance.
-    </p>
 
-    <div class="video-wrapper">
-      <video controls autoplay muted playsinline>
-        <source src="video/entrance.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
+<div class="container">
 
-    <div class="text-box">
-      <strong>Entrance:</strong><br><br>
-      Welcome to the Hill of Tara, one of the most important ancient ceremonial sites in Ireland.
-      This tour will guide you through key points of interest with short videos and storytelling
-      as you move around the hill.
-    </div>
+<h1>Hill of Tara Tour</h1>
 
-    <div class="button-row">
-      <a class="button primary" href="tour.html">Start Walking Tour</a>
-      <button class="secondary" onclick="showLocation()">Check My Location</button>
-    </div>
+<div class="hero" id="hero">
+<img src="images/entrance.jpg" alt="Modern Tara entrance view">
+<img class="top" src="images/entrance-ancient.jpg" alt="Ancient Tara reconstruction">
+</div>
 
-    <div class="status" id="status">Ready to begin.</div>
-  </div>
+<button class="secondary" onclick="toggleFade()">Fade Into Ancient Tara</button>
 
-  <script>
-    function showLocation() {
-      const status = document.getElementById('status');
+<p>
+Welcome to the Hill of Tara, the ancient seat of the High Kings of Ireland.
+</p>
 
-      if (!navigator.geolocation) {
-        status.textContent = 'Geolocation is not supported by your browser.';
-        return;
-      }
+<a href="tour.html"><button class="primary">Start Walking Tour</button></a>
+<button class="secondary" onclick="showLocation()">Check My Location</button>
+<button class="secondary" onclick="cacheFiles()">Cache Tour Files</button>
 
-      status.textContent = 'Checking your location...';
+<div class="status" id="status">Ready</div>
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude.toFixed(5);
-          const lon = position.coords.longitude.toFixed(5);
-          status.textContent = `Your location: ${lat}, ${lon}`;
-        },
-        () => {
-          status.textContent = 'Unable to retrieve your location. Please allow location access.';
-        }
-      );
-    }
-  </script>
+</div>
+
+<script>
+
+const hero=document.getElementById("hero")
+const status=document.getElementById("status")
+
+function toggleFade(){
+hero.classList.toggle("show-ancient")
+}
+
+function showLocation(){
+if(!navigator.geolocation){
+status.innerText="Geolocation not supported"
+return
+}
+
+status.innerText="Checking location..."
+
+navigator.geolocation.getCurrentPosition(pos=>{
+status.innerText="Location: "+pos.coords.latitude.toFixed(5)+", "+pos.coords.longitude.toFixed(5)
+},()=>{
+status.innerText="Unable to retrieve location"
+})
+}
+
+async function cacheFiles(){
+if(!('caches' in window)){
+status.innerText="Caching not supported"
+return
+}
+
+const files=[
+"./",
+"./index.html",
+"./tour.html",
+"./images/entrance.jpg",
+"./images/entrance-ancient.jpg"
+]
+
+try{
+const cache=await caches.open("tara-cache-v1")
+await cache.addAll(files)
+status.innerText="Tour cached for offline use"
+}catch(e){
+status.innerText="Some files could not be cached"
+}
+}
+
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register("sw.js")
+}
+
+</script>
+
 </body>
 </html>

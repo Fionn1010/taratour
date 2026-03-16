@@ -1,47 +1,21 @@
-const CACHE_NAME = "tara-tour-v1";
-const CORE_ASSETS = [
-  "./",
-  "./index.html",
-  "./tour.html",
-  "./video/entrance.mp4"
-];
+const CACHE_NAME="tara-cache-v1"
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
-  );
-});
+const FILES=[
+"./",
+"./index.html",
+"./tour.html",
+"./images/entrance.jpg",
+"./images/entrance-ancient.jpg"
+]
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      )
-    ).then(() => self.clients.claim())
-  );
-});
+self.addEventListener("install",e=>{
+e.waitUntil(
+caches.open(CACHE_NAME).then(cache=>cache.addAll(FILES))
+)
+})
 
-self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
-
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(event.request)
-        .then((response) => {
-          const cloned = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, cloned);
-          });
-          return response;
-        })
-        .catch(() => caches.match("./tour.html"));
-    })
-  );
-});
+self.addEventListener("fetch",e=>{
+e.respondWith(
+caches.match(e.request).then(res=>res||fetch(e.request))
+)
+})
