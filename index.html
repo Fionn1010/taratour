@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara Tour</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0f172a, #1e293b);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    p.subtitle {
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .video-wrapper {
+      border-radius: 16px;
+      overflow: hidden;
+      background: #000;
+      margin-bottom: 20px;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+    }
+
+    .text-box {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 18px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: #22c55e;
+      color: #082f1a;
+      font-weight: bold;
+    }
+
+    .secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .status {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+      min-height: 1.4em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hill of Tara Tour</h1>
+    <p class="subtitle">
+      Welcome to the ancient seat of the High Kings of Ireland. Begin your tour here at the entrance.
+    </p>
+
+    <div class="video-wrapper">
+      <video controls autoplay muted playsinline>
+        <source src="video/entrance.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <div class="text-box">
+      <strong>Entrance:</strong><br><br>
+      Welcome to the Hill of Tara, one of the most important ancient ceremonial sites in Ireland.
+      This tour will guide you through key points of interest with short videos and storytelling
+      as you move around the hill.
+    </div>
+
+    <div class="button-row">
+      <button class="primary" onclick="startTour()">Start Tour</button>
+      <button class="secondary" onclick="showLocation()">Check My Location</button>
+    </div>
+
+    <div class="status" id="status">Ready to begin.</div>
+  </div>
+
+  <script>
+    function startTour() {
+      document.getElementById('status').textContent =
+        'Tour started. Next step: connect this page to GPS triggers for each stop.';
+    }
+
+    function showLocation() {
+      const status = document.getElementById('status');
+
+      if (!navigator.geolocation) {
+        status.textContent = 'Geolocation is not supported by your browser.';
+        return;
+      }
+
+      status.textContent = 'Checking your location...';
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(5);
+          const lon = position.coords.longitude.toFixed(5);
+          status.textContent = `Your location: ${lat}, ${lon}`;
+        },
+        () => {
+          status.textContent =
+            'Unable to retrieve your location. Please allow location access.';
+        }
+      );
+    }
+  </script>
+</body>
+</html>
