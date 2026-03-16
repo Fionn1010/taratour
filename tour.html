@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara Tour – GPS Trigger System</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0f172a, #1e293b);
+      color: #fff;
+      min-height: 100vh;
+    }
+    .wrap {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      backdrop-filter: blur(10px);
+    }
+    h1, h2, h3 { margin-top: 0; }
+    p { line-height: 1.5; }
+    .subtitle { color: #dbeafe; }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .primary {
+      background: #22c55e;
+      color: #082f1a;
+      font-weight: bold;
+    }
+    .secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .danger {
+      background: #f87171;
+      color: #3f0a0a;
+      font-weight: bold;
+    }
+    .status {
+      min-height: 1.4em;
+      color: #bfdbfe;
+      margin-top: 10px;
+    }
+    .small {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+    .mono {
+      font-family: Consolas, Monaco, monospace;
+      word-break: break-word;
+    }
+    .video-shell {
+      overflow: hidden;
+      border-radius: 16px;
+      background: #000;
+      margin-top: 12px;
+    }
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+    }
+    .current-stop {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #fef3c7;
+      margin-bottom: 8px;
+    }
+    .stop-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .stop {
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .stop.unlocked {
+      border-color: rgba(34,197,94,0.6);
+      background: rgba(34,197,94,0.08);
+    }
+    .stop.active {
+      border-color: rgba(250,204,21,0.8);
+      background: rgba(250,204,21,0.10);
+    }
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.82rem;
+      margin-left: 8px;
+      background: rgba(255,255,255,0.12);
+    }
+    .pill.green { background: rgba(34,197,94,0.2); }
+    .pill.yellow { background: rgba(250,204,21,0.2); color: #fef08a; }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    @media (min-width: 860px) {
+      .grid { grid-template-columns: 1.2fr 0.8fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Hill of Tara Tour</h1>
+      <p class="subtitle">GPS-triggered tour player for your mobile browser.</p>
+      <p class="small">
+        This page watches the visitor’s location and unlocks a stop when they enter its radius.
+        The entrance is unlocked by default. For best results on-site, open this on a phone and allow location access.
+      </p>
+      <div class="button-row">
+        <button class="primary" onclick="startGps()">Enable GPS Tour</button>
+        <button class="secondary" onclick="playEntrance()">Play Entrance</button>
+        <button class="secondary" onclick="copyLocation()">Copy My Coordinates</button>
+        <button class="danger" onclick="stopGps()">Stop GPS</button>
+      </div>
+      <div id="status" class="status">Ready. Tap “Enable GPS Tour” when you are on site.</div>
+      <div id="coords" class="small mono"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div id="currentStop" class="current-stop">Current stop: Entrance</div>
+        <div id="currentDescription" class="small">
+          Welcome to the Hill of Tara. Begin your tour here at the entrance.
+        </div>
+
+        <div class="video-shell">
+          <video id="tourVideo" controls autoplay muted playsinline>
+            <source id="videoSource" src="video/entrance.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Stops</h2>
+        <p class="small">
+          The coordinates below are starter values for testing. Fine-tune them on location by using
+          “Copy My Coordinates” while standing at each stop.
+        </p>
+        <div id="stopList" class="stop-list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How to edit the stops</h3>
+      <p class="small">
+        Inside this file, look for the <span class="mono">const stops = [...]</span> section.
+        Change the <span class="mono">lat</span>, <span class="mono">lon</span>, <span class="mono">radius</span>,
+        <span class="mono">title</span>, <span class="mono">description</span>, and <span class="mono">video</span> values.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ------------------------------------------------------------
+    // STARTER STOP DATA
+    // Fine-tune on site using your phone.
+    // Video filenames assume a folder called "video"
+    // ------------------------------------------------------------
+    const stops = [
+      {
+        id: "entrance",
+        title: "Entrance",
+        description: "Welcome to the Hill of Tara. Begin your tour here at the entrance.",
+        lat: 53.57890,
+        lon: -6.61100,
+        radius: 70,
+        video: "video/entrance.mp4",
+        unlocked: true
+      },
+      {
+        id: "patrick",
+        title: "St. Patrick and the Church",
+        description: "This stop introduces St. Patrick, the church, and the drama of the Paschal fire.",
+        lat: 53.57920,
+        lon: -6.61060,
+        radius: 45,
+        video: "video/patrick.mp4",
+        unlocked: false
+      },
+      {
+        id: "banqueting",
+        title: "The Banqueting Hall",
+        description: "Here visitors hear about the great ceremonial avenue and royal gatherings.",
+        lat: 53.57955,
+        lon: -6.61135,
+        radius: 45,
+        video: "video/banqueting.mp4",
+        unlocked: false
+      },
+      {
+        id: "synods",
+        title: "Rath of the Synods",
+        description: "This stop focuses on the Rath of the Synods and the defensive palisade.",
+        lat: 53.57978,
+        lon: -6.61105,
+        radius: 38,
+        video: "video/synods.mp4",
+        unlocked: false
+      },
+      {
+        id: "hostages",
+        title: "Mound of the Hostages",
+        description: "An ancient passage tomb with a much older story than the later kings of Tara.",
+        lat: 53.57995,
+        lon: -6.61078,
+        radius: 35,
+        video: "video/hostages.mp4",
+        unlocked: false
+      },
+      {
+        id: "cormaic",
+        title: "Teach Cormaic",
+        description: "Teach Cormaic, the royal house associated with King Cormac, is one of Tara’s central monuments.",
+        lat: 53.57986,
+        lon: -6.61142,
+        radius: 35,
+        video: "video/cormaic.mp4",
+        unlocked: false
+      },
+      {
+        id: "destiny",
+        title: "Stone of Destiny",
+        description: "The Stone of Destiny is linked to the inauguration of kings at Tara.",
+        lat: 53.57983,
+        lon: -6.61123,
+        radius: 28,
+        video: "video/destiny.mp4",
+        unlocked: false
+      }
+    ];
+
+    let watchId = null;
+    let activeStopId = "entrance";
+
+    const statusEl = document.getElementById("status");
+    const coordsEl = document.getElementById("coords");
+    const stopListEl = document.getElementById("stopList");
+    const currentStopEl = document.getElementById("currentStop");
+    const currentDescriptionEl = document.getElementById("currentDescription");
+    const videoEl = document.getElementById("tourVideo");
+    const sourceEl = document.getElementById("videoSource");
+
+    function renderStops() {
+      stopListEl.innerHTML = "";
+
+      stops.forEach(stop => {
+        const div = document.createElement("div");
+        const isActive = stop.id === activeStopId;
+        div.className = "stop" + (stop.unlocked ? " unlocked" : "") + (isActive ? " active" : "");
+
+        const state = stop.unlocked
+          ? '<span class="pill green">Unlocked</span>'
+          : '<span class="pill">Locked</span>';
+
+        const active = isActive
+          ? '<span class="pill yellow">Playing</span>'
+          : "";
+
+        div.innerHTML = `
+          <strong>${stop.title}</strong>${state}${active}
+          <div class="small" style="margin-top: 8px;">${stop.description}</div>
+          <div class="small mono" style="margin-top: 8px;">
+            lat: ${stop.lat.toFixed(5)}, lon: ${stop.lon.toFixed(5)}, radius: ${stop.radius}m
+          </div>
+          <div class="button-row" style="margin-top:10px;">
+            <button class="secondary" onclick="playStopById('${stop.id}')">Play</button>
+          </div>
+        `;
+        stopListEl.appendChild(div);
+      });
+    }
+
+    function setCurrentStop(stop) {
+      activeStopId = stop.id;
+      currentStopEl.textContent = "Current stop: " + stop.title;
+      currentDescriptionEl.textContent = stop.description;
+
+      sourceEl.src = stop.video;
+      videoEl.load();
+
+      const playPromise = videoEl.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+
+      renderStops();
+    }
+
+    function playStopById(id) {
+      const stop = stops.find(s => s.id === id);
+      if (!stop) return;
+      if (!stop.unlocked && id !== "entrance") {
+        statusEl.textContent = stop.title + " is still locked. Walk closer to that location to unlock it.";
+        return;
+      }
+      statusEl.textContent = "Playing " + stop.title + ".";
+      setCurrentStop(stop);
+    }
+
+    function playEntrance() {
+      const entrance = stops.find(s => s.id === "entrance");
+      setCurrentStop(entrance);
+      statusEl.textContent = "Playing Entrance.";
+    }
+
+    function startGps() {
+      if (!navigator.geolocation) {
+        statusEl.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+
+      if (watchId !== null) {
+        statusEl.textContent = "GPS is already running.";
+        return;
+      }
+
+      statusEl.textContent = "Starting GPS watcher…";
+
+      watchId = navigator.geolocation.watchPosition(
+        handlePosition,
+        (error) => {
+          statusEl.textContent = "GPS error: " + error.message;
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 3000,
+          timeout: 10000
+        }
+      );
+    }
+
+    function stopGps() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        statusEl.textContent = "GPS stopped.";
+      } else {
+        statusEl.textContent = "GPS is not running.";
+      }
+    }
+
+    function handlePosition(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const accuracy = Math.round(position.coords.accuracy || 0);
+
+      coordsEl.textContent = `Your location: ${lat.toFixed(6)}, ${lon.toFixed(6)} (accuracy ~${accuracy}m)`;
+
+      let unlockedAny = false;
+      let nearestStop = null;
+      let nearestDistance = Infinity;
+
+      for (const stop of stops) {
+        const d = distanceMeters(lat, lon, stop.lat, stop.lon);
+
+        if (d < nearestDistance) {
+          nearestDistance = d;
+          nearestStop = stop;
+        }
+
+        if (d <= stop.radius && !stop.unlocked) {
+          stop.unlocked = true;
+          unlockedAny = true;
+          statusEl.textContent = `Unlocked: ${stop.title}`;
+          setCurrentStop(stop);
+        }
+      }
+
+      if (!unlockedAny && nearestStop) {
+        statusEl.textContent = `Nearest stop: ${nearestStop.title} (${Math.round(nearestDistance)}m away)`;
+      }
+
+      renderStops();
+    }
+
+    function distanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const toRad = deg => deg * Math.PI / 180;
+
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function copyLocation() {
+      if (!navigator.geolocation) {
+        statusEl.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const text = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+          navigator.clipboard.writeText(text).then(() => {
+            statusEl.textContent = "Copied coordinates: " + text;
+          }).catch(() => {
+            statusEl.textContent = "Coordinates: " + text;
+          });
+        },
+        (error) => {
+          statusEl.textContent = "Could not get current location: " + error.message;
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 10000
+        }
+      );
+    }
+
+    renderStops();
+    playEntrance();
+  </script>
+</body>
+</html>
