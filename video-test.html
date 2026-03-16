@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara Video Test</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+    .card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 20px;
+    }
+    h1 { margin-top: 0; }
+    video {
+      width: 100%;
+      border-radius: 16px;
+      background: black;
+      display: block;
+      margin: 16px 0;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button, a {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-size: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .primary { background: #22c55e; color: #052e16; font-weight: bold; }
+    .secondary { background: #e2e8f0; color: #0f172a; }
+    .status { margin-top: 14px; color: #bfdbfe; min-height: 1.5em; }
+    code {
+      background: rgba(255,255,255,0.08);
+      padding: 2px 6px;
+      border-radius: 6px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Entrance Video Test</h1>
+    <p>This page only tests the video file. It removes GPS and tour logic so you can isolate the problem.</p>
+
+    <p>Expected file path: <code>video/entrance.mp4</code></p>
+
+    <video id="v" controls playsinline preload="metadata">
+      <source src="video/entrance.mp4?v=2" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+
+    <div class="buttons">
+      <button class="primary" onclick="playVideo()">Play Video</button>
+      <a class="secondary" href="video/entrance.mp4?v=2" target="_blank">Open MP4 Directly</a>
+    </div>
+
+    <div id="status" class="status">Ready.</div>
+  </div>
+
+  <script>
+    const v = document.getElementById('v');
+    const status = document.getElementById('status');
+
+    function playVideo() {
+      const p = v.play();
+      if (p && typeof p.catch === 'function') {
+        p.then(() => {
+          status.textContent = 'Video started.';
+        }).catch((err) => {
+          status.textContent = 'Play failed: ' + err.message;
+        });
+      }
+    }
+
+    v.addEventListener('loadedmetadata', () => {
+      status.textContent = 'Metadata loaded. Duration: ' + Math.round(v.duration || 0) + ' seconds.';
+    });
+
+    v.addEventListener('error', () => {
+      const mediaError = v.error;
+      status.textContent = mediaError
+        ? 'Video error code: ' + mediaError.code + '. This usually means the file path or encoding is wrong.'
+        : 'Unknown video error.';
+    });
+  </script>
+</body>
+</html>
