@@ -13,7 +13,7 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       padding: 20px;
     }
@@ -22,12 +22,19 @@
       display: none;
     }
 
+    .card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
     h1, h2 {
       margin-bottom: 10px;
     }
 
     p {
-      color: #ccc;
+      color: #d1d5db;
     }
 
     video {
@@ -37,9 +44,13 @@
       background: black;
     }
 
+    .meta {
+      margin-bottom: 12px;
+    }
+
     button {
       padding: 14px;
-      margin: 5px;
+      margin: 5px 0;
       border: none;
       border-radius: 10px;
       font-size: 16px;
@@ -48,40 +59,81 @@
 
     #startTour {
       background: #22c55e;
+      color: #052e16;
       width: 100%;
       font-weight: bold;
     }
 
     .nav-buttons {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
-    .nav-buttons button {
-      flex: 1;
+    .nav-buttons button,
+    .extra-buttons button {
       background: #f3f4f6;
-      color: black;
+      color: #111827;
+      width: 100%;
+    }
+
+    .extra-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #locationDot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #6b7280;
+      display: inline-block;
     }
   </style>
 </head>
-
 <body>
   <div id="loadingScreen" class="container">
     <h1>Hill of Tara Tour</h1>
     <p>Welcome to your walking tour experience.</p>
     <button id="startTour">Start Walking Tour</button>
-    <p>Ready</p>
+
+    <div id="gpsStatus" class="status">
+      <span id="locationDot"></span>
+      <span>Ready</span>
+    </div>
   </div>
 
   <div id="tourScreen" class="container hidden">
-    <h2 id="sceneTitle">Loading...</h2>
-    <p id="sceneDescription"></p>
+    <div class="card">
+      <h2 id="sceneTitle">Loading...</h2>
+      <p id="sceneDescription"></p>
 
-    <video id="sceneVideo" controls playsinline></video>
+      <div class="meta">
+        <p id="nearestStop">Nearest stop: —</p>
+        <p id="distanceAway">Distance: —</p>
+      </div>
 
-    <div class="nav-buttons">
-      <button id="prevStopBtn">Previous</button>
-      <button id="nextStopBtn">Next</button>
+      <video id="sceneVideo" controls playsinline preload="metadata"></video>
+
+      <div class="nav-buttons">
+        <button id="prevStopBtn">Previous</button>
+        <button id="nextStopBtn">Next</button>
+      </div>
+
+      <div class="extra-buttons">
+        <button id="playNarrationBtn">Play Narration</button>
+        <button id="stopTourBtn">Stop Narration</button>
+        <button id="recenterBtn">Check My Location</button>
+      </div>
     </div>
   </div>
 
