@@ -1,16 +1,14 @@
-const CACHE_NAME = "tara-cache-v2";
+const CACHE_NAME = "tara-cache-v3";
 
-const FILES_TO_CACHE = [
+const APP_SHELL = [
   "./",
   "./index.html",
-  "./tour.html",
-  "./images/entrance.jpg",
-  "./images/entrance-ancient.jpg",
+  "./tour.html"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
   );
   self.skipWaiting();
 });
@@ -31,34 +29,33 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  const requestURL = new URL(event.request.url);
+
+  if (requestURL.origin !== location.origin) return;
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
 
       return fetch(event.request)
-        .then((networkResponse) => {
-          if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type !== "basic"
-          ) {
-            return networkResponse;
-          }
+        .then((response) => {
+          if (!response || response.status !== 200) return response;
 
-          const responseToCache = networkResponse.clone();
-
+          const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
+            cache.put(event.request, copy);
           });
 
-          return networkResponse;
+          return response;
         })
         .catch(() => {
           if (event.request.mode === "navigate") {
             return caches.match("./index.html");
           }
+
+          return new Response("Offline and not cached", {
+            status: 503
+          });
         });
     })
   );
