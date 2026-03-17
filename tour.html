@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara Tour</title>
+  <link rel="stylesheet" href="./style.css" />
+  <style>
+    :root {
+      --bg: #07163a;
+      --card: rgba(255, 255, 255, 0.08);
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.82);
+      --line: rgba(255, 255, 255, 0.14);
+      --green: #22c55e;
+      --green-text: #052e16;
+      --white-btn: #f3f4f6;
+      --dark-text: #111827;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #061230 0%, #07163a 100%);
+      color: var(--text);
+    }
+
+    .screen {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 18px 40px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--card);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 7vw, 4rem);
+      line-height: 1.02;
+      margin: 0 0 18px;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 4.5vw, 2.3rem);
+      margin: 0 0 12px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0 0 14px;
+    }
+
+    .lead {
+      font-size: 1.08rem;
+      margin-bottom: 18px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    #locationDot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+      background: #6b7280;
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.05);
+    }
+
+    #locationDot.active { background: #22c55e; }
+    #locationDot.searching { background: #f59e0b; }
+
+    .tour-layout {
+      display: grid;
+      gap: 18px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .meta-row {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+      background: #000;
+      border: 1px solid var(--line);
+      margin: 12px 0 16px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.06s ease, opacity 0.2s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #startTour {
+      background: var(--green);
+      color: var(--green-text);
+      font-weight: 700;
+      min-width: 220px;
+    }
+
+    #prevStopBtn,
+    #nextStopBtn,
+    #playNarrationBtn,
+    #stopTourBtn,
+    #recenterBtn {
+      background: var(--white-btn);
+      color: var(--dark-text);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .screen {
+        padding: 18px 14px 28px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section id="loadingScreen" class="screen hero">
+    <div class="card">
+      <h1>Hill of Tara Tour</h1>
+      <p class="lead">Welcome to the Hill of Tara digital walking tour. Start the tour to open the stop-by-stop experience and let GPS help guide you around the site.</p>
+      <div class="top-actions">
+        <button id="startTour">Start Walking Tour</button>
+      </div>
+      <div id="gpsStatus" class="status">
+        <span id="locationDot"></span>
+        <span>Ready</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="tourScreen" class="screen">
+    <div class="card tour-layout">
+      <div>
+        <h2 id="sceneTitle">The Entrance</h2>
+        <p id="sceneDescription">Loading stop description…</p>
+
+        <div class="meta">
+          <div id="nearestStop" class="meta-row">Nearest stop: —</div>
+          <div id="distanceAway" class="meta-row">Distance: —</div>
+        </div>
+      </div>
+
+      <video
+        id="sceneVideo"
+        controls
+        playsinline
+        preload="metadata"
+      ></video>
+
+      <div class="controls">
+        <button id="prevStopBtn">Previous Stop</button>
+        <button id="nextStopBtn">Next Stop</button>
+        <button id="playNarrationBtn">Play Narration</button>
+        <button id="stopTourBtn">Stop Narration</button>
+        <button id="recenterBtn" class="wide">Check My Location</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="./app.js"></script>
+</body>
+</html>
