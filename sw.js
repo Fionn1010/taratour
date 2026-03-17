@@ -1,9 +1,15 @@
-const CACHE_NAME = "tara-cache-v3";
+const CACHE_NAME = "tara-cache-v4";
 
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./tour.html"
+  "./tour.html",
+  "./style.css",
+  "./app.js",
+  "./stops.json",
+  "./assets/video/entrance.mp4",
+  "./assets/video/st_patrick.mp4",
+  "./assets/video/banqueting_hall.mp4"
 ];
 
 self.addEventListener("install", (event) => {
