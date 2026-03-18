@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GPS Test Debug</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f1ea;
+      color: #222;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .status {
+      font-size: 22px;
+      font-weight: bold;
+      color: #1f4fa3;
+    }
+    .row {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+    .label {
+      color: #666;
+      display: block;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+    .value {
+      font-size: 18px;
+      word-break: break-word;
+    }
+    button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2d6cdf;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    button:hover {
+      background: #1f4fa3;
+    }
+    .ok {
+      color: #157347;
+      font-weight: bold;
+    }
+    .warn {
+      color: #b26a00;
+      font-weight: bold;
+    }
+    .error {
+      color: #b42318;
+      font-weight: bold;
+    }
+    .small {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>GPS Test Debug Page</h1>
+      <p class="small">Use this page to test location on iPhone before merging GPS into your main tour.</p>
+      <button id="startBtn">Start GPS Test</button>
+      <button id="demoBtn">Demo Trigger</button>
+    </div>
+
+    <div class="card">
+      <h2>Current Status</h2>
+      <div class="status" id="status">Not started</div>
+      <div class="row">
+        <span class="label">Trigger</span>
+        <div class="value" id="triggerState">Waiting</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Live GPS Data</h2>
+      <div class="row">
+        <span class="label">Latitude / Longitude</span>
+        <div class="value" id="coords">—</div>
+      </div>
+      <div class="row">
+        <span class="label">Accuracy</span>
+        <div class="value" id="accuracy">—</div>
+      </div>
+      <div class="row">
+        <span class="label">Distance to target</span>
+        <div class="value" id="distance">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Target Location</h2>
+      <div class="row">
+        <span class="label">Test Latitude / Longitude</span>
+        <div class="value" id="targetCoords">53.3498, -6.2603</div>
+      </div>
+      <div class="row">
+        <span class="label">Trigger Radius</span>
+        <div class="value" id="radius">20 m</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Notes</h2>
+      <div class="small">
+        Open this over <strong>https</strong> on your iPhone.<br>
+        Indoors, GPS may drift, so test near a window or outside.<br>
+        Replace the test coordinates with your own house coordinates before testing.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEST_LAT = 53.3498; // replace with your house
+    const TEST_LON = -6.2603; // replace with your house
+    const TRIGGER_RADIUS = 20;
+
+    const statusEl = document.getElementById("status");
+    const triggerStateEl = document.getElementById("triggerState");
+    const coordsEl = document.getElementById("coords");
+    const accuracyEl = document.getElementById("accuracy");
+    const distanceEl = document.getElementById("distance");
+    const startBtn = document.getElementById("startBtn");
+    const demoBtn = document.getElementById("demoBtn");
+
+    let triggered = false;
+    let watchId = null;
+
+    function setStatus(text, cls="") {
+      statusEl.textContent = text;
+      statusEl.className = "status " + cls;
+    }
+
+    function toRad(v) {
+      return v * Math.PI / 180;
+    }
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function fireTrigger(source) {
+      if (triggered) return;
+      triggered = true;
+      triggerStateEl.textContent = "Triggered via " + source;
+      triggerStateEl.className = "value ok";
+      setStatus("AR test triggered", "ok");
+      alert("🎉 AR Experience Triggered!");
+    }
+
+    function startGps() {
+      if (!navigator.geolocation) {
+        setStatus("Geolocation not supported", "error");
+        return;
+      }
+
+      setStatus("Requesting GPS...", "warn");
+      triggerStateEl.textContent = "Waiting";
+      triggerStateEl.className = "value";
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const acc = pos.coords.accuracy;
+          const dist = getDistance(lat, lon, TEST_LAT, TEST_LON);
+
+          coordsEl.textContent = lat.toFixed(6) + ", " + lon.toFixed(6);
+          accuracyEl.textContent = Math.round(acc) + " m";
+          distanceEl.textContent = Math.round(dist) + " m";
+
+          setStatus("GPS active", "ok");
+
+          if (dist <= TRIGGER_RADIUS) {
+            fireTrigger("GPS");
+          }
+        },
+        (err) => {
+          setStatus("GPS error", "error");
+          triggerStateEl.textContent = err.message;
+          triggerStateEl.className = "value error";
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    startBtn.addEventListener("click", startGps);
+
+    demoBtn.addEventListener("click", () => {
+      fireTrigger("Demo button");
+    });
+  </script>
+</body>
+</html>
