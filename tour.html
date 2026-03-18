@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hill of Tara Tour</title>
+  <style>
+    body { font-family: Arial; padding: 16px; background:#f5f5f5; }
+    .card { background:white; padding:16px; border-radius:12px; max-width:600px; margin:auto; }
+    button { padding:10px; margin:5px; border-radius:8px; border:none; background:#1f6feb; color:white; }
+    video { width:100%; margin-top:10px; border-radius:8px; background:black; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Hill of Tara Tour</h1>
+  <p id="status">Ready</p>
+
+  <button id="startBtn">Start Tour</button>
+  <button id="demoBtn">Demo Mode</button>
+  <button id="playBtn" hidden>Play Video</button>
+
+  <h2 id="stop-title">No stop yet</h2>
+  <p id="stop-desc"></p>
+
+  <video id="video" controls playsinline></video>
+
+  <pre id="debug"></pre>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

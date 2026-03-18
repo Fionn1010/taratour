@@ -1,0 +1,11 @@
+[
+  {
+    "id":"1",
+    "title":"Welcome to Tara",
+    "description":"Welcome to the Hill of Tara.",
+    "lat":53.5800,
+    "lon":-6.6110,
+    "radius":60,
+    "video":"./videos/stop1.mp4"
+  }
+]
