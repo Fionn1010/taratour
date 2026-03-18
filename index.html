@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hill of Tara Tour</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: white;
+      text-align: center;
+    }
+
+    .hero {
+      position: relative;
+      height: 100vh;
+      background: url("./images/tara.jpg") center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      padding: 20px;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 14px 20px;
+      background: #1f6feb;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hero">
+    <div class="overlay"></div>
+
+    <div class="content">
+      <h1>Welcome to the Hill of Tara</h1>
+      <p>Step into the ancient seat of the High Kings of Ireland</p>
+
+      <a href="tour.html" class="button">Start Tour</a>
+    </div>
+  </div>
+</body>
+</html>
