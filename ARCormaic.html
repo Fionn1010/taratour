@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>ARCormaic</title>
+  <style>
+    :root{
+      --bg:#0e0d0a;
+      --panel:rgba(18,16,13,.78);
+      --panel-border:rgba(255,255,255,.12);
+      --text:#f5f1e7;
+      --muted:#cfc6b2;
+      --accent:#d3b77c;
+      --ok:#7cff96;
+      --btn:#221d16;
+      --btn2:#3a3024;
+    }
+    *{box-sizing:border-box}
+    html, body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#000;
+      font-family:Arial, sans-serif;
+      color:var(--text);
+    }
+    #app{
+      position:fixed;
+      inset:0;
+      background:#000;
+    }
+    #overlay{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:10;
+    }
+    .topbar{
+      position:absolute;
+      top:env(safe-area-inset-top, 0);
+      left:0;
+      right:0;
+      padding:12px 12px 0;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .pill{
+      pointer-events:auto;
+      background:var(--panel);
+      border:1px solid var(--panel-border);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-weight:700;
+      font-size:14px;
+    }
+    .card{
+      pointer-events:auto;
+      position:absolute;
+      left:12px;
+      right:12px;
+      bottom:calc(12px + env(safe-area-inset-bottom, 0));
+      background:var(--panel);
+      border:1px solid var(--panel-border);
+      border-radius:22px;
+      padding:14px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow:0 10px 40px rgba(0,0,0,.35);
+    }
+    .title{
+      margin:0 0 6px 0;
+      font-size:22px;
+      color:var(--accent);
+    }
+    .subtitle{
+      margin:0 0 10px 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+    .steps{
+      margin:0 0 12px 20px;
+      padding:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+    }
+    button, input[type=range]{
+      pointer-events:auto;
+    }
+    button{
+      border:none;
+      border-radius:16px;
+      padding:13px 16px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      color:var(--text);
+      background:var(--btn);
+    }
+    button.secondary{
+      background:var(--btn2);
+    }
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+    .status{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:10px;
+    }
+    .status strong{
+      color:var(--ok);
+    }
+    .control{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:200px;
+      flex:1 1 220px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    input[type=range]{
+      width:100%;
+    }
+    #reticleHint{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .reticle-ring{
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      border:4px solid rgba(124,255,150,.9);
+      box-shadow:0 0 26px rgba(124,255,150,.35);
+      opacity:.0;
+      transition:opacity .25s ease;
+    }
+    .reticle-ring.visible{
+      opacity:.85;
+    }
+    #unsupported{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:24px;
+      z-index:20;
+      background:#0a0a0a;
+      color:#fff;
+    }
+    #unsupported .box{
+      max-width:520px;
+      background:#171411;
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:20px;
+      padding:20px;
+    }
+    .tiny{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:10px;
+      line-height:1.4;
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="overlay">
+    <div class="topbar">
+      <div class="pill">AR Cormaic</div>
+      <div class="pill" id="placementState">Not placed</div>
+    </div>
+
+    <div id="reticleHint">
+      <div class="reticle-ring" id="reticleRing"></div>
+    </div>
+
+    <div class="card">
+      <h1 class="title">Teach Cormaic</h1>
+      <p class="subtitle">This page uses in-page WebXR AR placement. Scan the ground, wait for the ring to appear, then tap the screen to place the model. Once placed, it stays fixed so you can walk around it or inside it.</p>
+      <ol class="steps">
+        <li>Tap <strong>Start AR</strong></li>
+        <li>Move your phone slowly to detect the ground</li>
+        <li>When the green ring appears, tap the screen to place the model</li>
+        <li>Walk around the structure, or into it if the model allows</li>
+      </ol>
+
+      <div class="row">
+        <button id="startARBtn">Start AR</button>
+        <button id="resetBtn" class="secondary" disabled>Reset Placement</button>
+      </div>
+
+      <div class="row">
+        <label class="control">
+          Scale <span id="scaleValue">1.00x</span>
+          <input id="scaleSlider" type="range" min="0.2" max="3.0" step="0.01" value="1.00">
+        </label>
+      </div>
+
+      <div class="status" id="statusText">Status: waiting to start.</div>
+      <div class="tiny">Model path is currently set to <strong>./assets/model/cormaic.glb</strong>. If your filename is different, edit the <strong>MODEL_URL</strong> constant near the top of this file.</div>
+    </div>
+  </div>
+
+  <div id="unsupported">
+    <div class="box">
+      <h2 style="margin-top:0;color:#d3b77c;">AR not available on this device</h2>
+      <p>This page needs a mobile browser and device that support in-page WebXR augmented reality.</p>
+      <p class="tiny">Try Android Chrome over HTTPS. If you need iPhone support, the next best fallback is a non-WebXR camera overlay version.</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { ARButton } from 'three/addons/webxr/ARButton.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const MODEL_URL = './assets/model/cormaic.glb';
+
+    const app = document.getElementById('app');
+    const startARBtn = document.getElementById('startARBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const scaleSlider = document.getElementById('scaleSlider');
+    const scaleValue = document.getElementById('scaleValue');
+    const statusText = document.getElementById('statusText');
+    const placementState = document.getElementById('placementState');
+    const reticleRing = document.getElementById('reticleRing');
+    const unsupported = document.getElementById('unsupported');
+
+    let camera, scene, renderer;
+    let controller;
+    let reticle;
+    let hitTestSource = null;
+    let hitTestSourceRequested = false;
+    let localSpace = null;
+
+    let modelTemplate = null;
+    let placedModel = null;
+    let currentScale = parseFloat(scaleSlider.value);
+    let arButton = null;
+    let arStarted = false;
+
+    init();
+
+    async function init() {
+      if (!navigator.xr) {
+        unsupported.style.display = 'flex';
+        return;
+      }
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+
+      const hemi = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1.2);
+      scene.add(hemi);
+
+      const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+      dir.position.set(0.5, 1, 0.25);
+      scene.add(dir);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.xr.enabled = true;
+      app.appendChild(renderer.domElement);
+
+      const ringGeo = new THREE.RingGeometry(0.12, 0.16, 40).rotateX(-Math.PI / 2);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0x7cff96 });
+      reticle = new THREE.Mesh(ringGeo, ringMat);
+      reticle.matrixAutoUpdate = false;
+      reticle.visible = false;
+      scene.add(reticle);
+
+      controller = renderer.xr.getController(0);
+      controller.addEventListener('select', onSelect);
+      scene.add(controller);
+
+      window.addEventListener('resize', onWindowResize);
+
+      statusText.innerHTML = 'Status: model loading…';
+      await loadModel();
+      statusText.innerHTML = 'Status: model loaded. Tap <strong>Start AR</strong>.';
+
+      setupARButton();
+      scaleSlider.addEventListener('input', updateScale);
+      resetBtn.addEventListener('click', resetPlacement);
+
+      renderer.setAnimationLoop(render);
+    }
+
+    function setupARButton() {
+      arButton = ARButton.createButton(renderer, {
+        requiredFeatures: ['hit-test'],
+        optionalFeatures: ['dom-overlay'],
+        domOverlay: { root: document.body }
+      });
+      arButton.style.display = 'none';
+      document.body.appendChild(arButton);
+
+      startARBtn.addEventListener('click', async () => {
+        const supported = await navigator.xr.isSessionSupported('immersive-ar').catch(() => false);
+        if (!supported) {
+          unsupported.style.display = 'flex';
+          return;
+        }
+        arButton.click();
+      });
+
+      renderer.xr.addEventListener('sessionstart', () => {
+        arStarted = true;
+        statusText.innerHTML = 'Status: move your phone slowly until the green ring appears.';
+        startARBtn.disabled = true;
+      });
+
+      renderer.xr.addEventListener('sessionend', () => {
+        arStarted = false;
+        hitTestSourceRequested = false;
+        hitTestSource = null;
+        localSpace = null;
+        reticle.visible = false;
+        reticleRing.classList.remove('visible');
+        startARBtn.disabled = false;
+        placementState.textContent = placedModel ? 'Placed' : 'Not placed';
+        statusText.innerHTML = placedModel
+          ? 'Status: AR session ended. Your model placement was reset for safety.'
+          : 'Status: AR session ended.';
+        if (placedModel) {
+          scene.remove(placedModel);
+          placedModel = null;
+          resetBtn.disabled = true;
+          placementState.textContent = 'Not placed';
+        }
+      });
+    }
+
+    async function loadModel() {
+      const loader = new GLTFLoader();
+      modelTemplate = await loader.loadAsync(MODEL_URL);
+      modelTemplate.scene.traverse((obj) => {
+        if (obj.isMesh) {
+          obj.castShadow = false;
+          obj.receiveShadow = false;
+          if (obj.material) {
+            obj.material.side = THREE.DoubleSide;
+          }
+        }
+      });
+    }
+
+    function onSelect() {
+      if (!reticle.visible || !modelTemplate) return;
+
+      if (placedModel) {
+        scene.remove(placedModel);
+      }
+
+      placedModel = modelTemplate.scene.clone(true);
+      placedModel.visible = true;
+      placedModel.scale.setScalar(currentScale);
+      placedModel.position.setFromMatrixPosition(reticle.matrix);
+      placedModel.quaternion.setFromRotationMatrix(reticle.matrix);
+
+      scene.add(placedModel);
+      placementState.textContent = 'Placed';
+      statusText.innerHTML = 'Status: model placed. Walk around it or into it.';
+      resetBtn.disabled = false;
+    }
+
+    function updateScale() {
+      currentScale = parseFloat(scaleSlider.value);
+      scaleValue.textContent = currentScale.toFixed(2) + 'x';
+      if (placedModel) {
+        placedModel.scale.setScalar(currentScale);
+      }
+    }
+
+    function resetPlacement() {
+      if (placedModel) {
+        scene.remove(placedModel);
+        placedModel = null;
+      }
+      placementState.textContent = 'Not placed';
+      statusText.innerHTML = arStarted
+        ? 'Status: placement cleared. Scan again and tap to place.'
+        : 'Status: waiting to start.';
+      resetBtn.disabled = true;
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function render(timestamp, frame) {
+      if (frame) {
+        const referenceSpace = renderer.xr.getReferenceSpace();
+        const session = renderer.xr.getSession();
+
+        if (!hitTestSourceRequested) {
+          session.requestReferenceSpace('viewer').then((viewerSpace) => {
+            session.requestHitTestSource({ space: viewerSpace }).then((source) => {
+              hitTestSource = source;
+            });
+          });
+
+          session.requestReferenceSpace('local').then((space) => {
+            localSpace = space;
+          });
+
+          session.addEventListener('end', () => {
+            hitTestSourceRequested = false;
+            hitTestSource = null;
+            localSpace = null;
+          });
+
+          hitTestSourceRequested = true;
+        }
+
+        if (hitTestSource && localSpace) {
+          const hitTestResults = frame.getHitTestResults(hitTestSource);
+
+          if (hitTestResults.length > 0) {
+            const hit = hitTestResults[0];
+            const pose = hit.getPose(referenceSpace);
+
+            reticle.visible = true;
+            reticle.matrix.fromArray(pose.transform.matrix);
+            reticleRing.classList.add('visible');
+
+            if (!placedModel) {
+              statusText.innerHTML = 'Status: surface found. Tap the screen to place Teach Cormaic.';
+            }
+          } else {
+            reticle.visible = false;
+            reticleRing.classList.remove('visible');
+
+            if (!placedModel) {
+              statusText.innerHTML = 'Status: scanning for a surface… move your phone slowly.';
+            }
+          }
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+</html>
