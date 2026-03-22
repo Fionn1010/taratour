@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stone of Destiny MR – Auto Place</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#f6f4ef;
+      --card:#ffffff;
+      --text:#2d2418;
+      --muted:#6b6256;
+      --accent:#254d2c;
+      --accent-soft:#dfeedd;
+      --line:#ddd6cb;
+      --gold:rgba(255, 225, 150, .55);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.4;
+    }
+    .wrap{
+      max-width:720px;
+      margin:0 auto;
+      padding:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px;
+      margin-bottom:16px;
+      box-shadow:0 1px 0 rgba(0,0,0,.03);
+    }
+    h1{
+      font-size:2rem;
+      margin:0 0 8px 0;
+      color:#6a5126;
+    }
+    .lede{
+      color:var(--muted);
+      margin:0;
+    }
+    .steps{
+      margin:12px 0 0;
+      padding-left:20px;
+      color:var(--muted);
+    }
+    .status{
+      background:var(--accent-soft);
+      color:var(--accent);
+      border:1px solid #bdd7bf;
+      border-radius:18px;
+      padding:14px 16px;
+      font-weight:700;
+      display:none;
+      margin-bottom:14px;
+    }
+    .camera-shell{
+      position:relative;
+      width:100%;
+      aspect-ratio:9 / 16;
+      background:#000;
+      border-radius:24px;
+      overflow:hidden;
+      border:2px solid #221a13;
+    }
+    video#camera{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#000;
+    }
+    .overlay-center{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+    }
+    .reticle{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:180px;
+      height:180px;
+      transform:translate(-50%,-50%);
+      border:5px solid rgba(121,255,131,.9);
+      border-radius:50%;
+      box-shadow:0 0 24px rgba(121,255,131,.35);
+      opacity:.85;
+      transition:opacity .25s ease;
+    }
+    .reticle.hidden{opacity:0}
+    .chip{
+      position:absolute;
+      bottom:18px;
+      background:rgba(22,20,18,.82);
+      color:#fff;
+      padding:10px 16px;
+      border-radius:999px;
+      font-size:1rem;
+      font-weight:700;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index:4;
+    }
+    .chip.left{left:16px}
+    .chip.right{right:16px}
+
+    .model-stage{
+      position:absolute;
+      left:50%;
+      top:58%;
+      transform:translate(-50%,-50%);
+      width:260px;
+      height:360px;
+      display:none;
+      pointer-events:auto;
+      z-index:3;
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,.32));
+    }
+    .model-stage.placed{
+      animation: placePop .5s ease-out;
+    }
+    @keyframes placePop{
+      0%{ transform:translate(-50%,-47%) scale(.92); opacity:.0; }
+      100%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
+    }
+    .stone-shadow{
+      position:absolute;
+      left:50%;
+      bottom:28px;
+      width:170px;
+      height:36px;
+      transform:translateX(-50%);
+      background:radial-gradient(ellipse at center, rgba(0,0,0,.42) 0%, rgba(0,0,0,.22) 40%, rgba(0,0,0,0) 72%);
+      opacity:0;
+      transition:opacity .35s ease, width .15s ease, height .15s ease;
+      pointer-events:none;
+      z-index:2;
+      filter: blur(2px);
+    }
+    .stone-shadow.visible{opacity:.9}
+    .sun-pulse{
+      position:absolute;
+      left:50%;
+      top:54%;
+      width:260px;
+      height:260px;
+      transform:translate(-50%,-50%);
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,224,140,.42) 0%, rgba(255,224,140,.18) 30%, rgba(255,224,140,0) 68%);
+      opacity:0;
+      pointer-events:none;
+      z-index:2;
+    }
+    .sun-pulse.flash{
+      animation: sunFlash 1.4s ease-out;
+    }
+    @keyframes sunFlash{
+      0%{ opacity:0; transform:translate(-50%,-50%) scale(.75); }
+      24%{ opacity:.95; transform:translate(-50%,-50%) scale(1); }
+      100%{ opacity:0; transform:translate(-50%,-50%) scale(1.24); }
+    }
+
+    model-viewer{
+      width:100%;
+      height:100%;
+      background:transparent;
+      --poster-color: transparent;
+    }
+    .hud{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      z-index:4;
+    }
+    .pill{
+      background:rgba(255,255,255,.9);
+      color:#2b231b;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.92rem;
+      font-weight:700;
+      border:1px solid rgba(0,0,0,.08);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .controls-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .control{
+      background:#faf8f4;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .control label{
+      display:block;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .value{
+      color:var(--muted);
+      font-size:.92rem;
+      margin-left:6px;
+      font-weight:400;
+    }
+    input[type=range]{ width:100%; }
+
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    button{
+      appearance:none;
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .primary{
+      background:#2c241d;
+      color:#fff;
+    }
+    .secondary{
+      background:#ece7df;
+      color:#2c241d;
+      border:1px solid var(--line);
+    }
+    .note{
+      color:var(--muted);
+      margin-top:10px;
+      font-size:.95rem;
+    }
+    @media (max-width:560px){
+      .controls-grid{grid-template-columns:1fr}
+      h1{font-size:1.65rem}
+      .model-stage{width:220px;height:310px}
+      .sun-pulse{width:220px;height:220px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Stone of Destiny MR</h1>
+      <p class="lede">Allow camera access, face the Stone of Destiny, then lock alignment. The model will place automatically, a light pulse will appear, and narration will begin.</p>
+      <ol class="steps">
+        <li>Enable camera</li>
+        <li>Stand facing the stone</li>
+        <li>Tap <strong>Lock Alignment</strong></li>
+        <li>The stone appears automatically</li>
+        <li>Adjust size and height until it feels right</li>
+      </ol>
+    </div>
+
+    <div class="status card" id="statusBox">Alignment locked. The Stone of Destiny has been placed. Narration is beginning.</div>
+
+    <div class="card">
+      <div class="camera-shell">
+        <video id="camera" autoplay playsinline muted></video>
+
+        <div class="hud">
+          <div class="pill" id="cameraState">Camera off</div>
+          <div class="pill" id="modelState">Model hidden</div>
+          <div class="pill" id="audioState">Narration ready</div>
+        </div>
+
+        <div class="overlay-center">
+          <div class="reticle" id="reticle"></div>
+        </div>
+
+        <div class="sun-pulse" id="sunPulse"></div>
+        <div class="stone-shadow" id="stoneShadow"></div>
+
+        <div class="model-stage" id="modelStage">
+          <model-viewer
+            id="stoneModel"
+            src="./assets/model/liafail.glb"
+            alt="Stone of Destiny"
+            auto-rotate
+            camera-controls
+            shadow-intensity="1"
+            exposure="1.15"
+            interaction-prompt="none"
+            touch-action="pan-y"
+            ar-modes="webxr scene-viewer quick-look">
+          </model-viewer>
+        </div>
+
+        <div class="chip left">Stone of Destiny</div>
+        <div class="chip right" id="alignChip">Not aligned</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="secondary" id="enableCameraBtn">Enable Camera View</button>
+        <button class="primary" id="lockBtn">Lock Alignment</button>
+        <button class="secondary" id="replayNarrationBtn">Replay Narration</button>
+        <button class="secondary" id="stopNarrationBtn">Stop Narration</button>
+        <button class="secondary" id="resetBtn">Reset View</button>
+      </div>
+
+      <p class="note">This version auto-places the 3D model on alignment, adds a shadow and sunlight pulse for realism, and starts narration automatically.</p>
+    </div>
+
+    <div class="card">
+      <div class="controls-grid">
+        <div class="control">
+          <label for="scaleSlider">Model size <span class="value" id="scaleValue">1.00x</span></label>
+          <input type="range" id="scaleSlider" min="0.5" max="2.2" step="0.01" value="1.00">
+        </div>
+        <div class="control">
+          <label for="heightSlider">Vertical position <span class="value" id="heightValue">58%</span></label>
+          <input type="range" id="heightSlider" min="30" max="80" step="1" value="58">
+        </div>
+      </div>
+      <p class="note">Tip: increase size first if the stone feels too small. Then adjust vertical position until it feels grounded in the landscape.</p>
+    </div>
+  </div>
+
+  <script>
+    const camera = document.getElementById('camera');
+    const enableCameraBtn = document.getElementById('enableCameraBtn');
+    const lockBtn = document.getElementById('lockBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const replayNarrationBtn = document.getElementById('replayNarrationBtn');
+    const stopNarrationBtn = document.getElementById('stopNarrationBtn');
+
+    const modelStage = document.getElementById('modelStage');
+    const stoneModel = document.getElementById('stoneModel');
+    const stoneShadow = document.getElementById('stoneShadow');
+    const sunPulse = document.getElementById('sunPulse');
+    const statusBox = document.getElementById('statusBox');
+    const reticle = document.getElementById('reticle');
+    const alignChip = document.getElementById('alignChip');
+    const cameraState = document.getElementById('cameraState');
+    const modelState = document.getElementById('modelState');
+    const audioState = document.getElementById('audioState');
+
+    const scaleSlider = document.getElementById('scaleSlider');
+    const heightSlider = document.getElementById('heightSlider');
+    const scaleValue = document.getElementById('scaleValue');
+    const heightValue = document.getElementById('heightValue');
+
+    let stream = null;
+    let aligned = false;
+    let usingSpeech = 'speechSynthesis' in window;
+
+    const narrationText = [
+      "On this hill, at Tara, the fate of kings was decided.",
+      "Before the people, before the land, a man would step forward.",
+      "And place his hand upon the stone.",
+      "The Lia Fail, the Stone of Destiny.",
+      "It is said it would answer, only to the true king of Ireland."
+    ];
+
+    async function enableCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false
+        });
+        camera.srcObject = stream;
+        cameraState.textContent = 'Camera live';
+      } catch (err) {
+        cameraState.textContent = 'Camera blocked';
+        alert('Camera access was not granted. Please allow camera access and try again.');
+      }
+    }
+
+    function lockAlignment() {
+      aligned = true;
+      statusBox.style.display = 'block';
+      alignChip.textContent = 'Aligned';
+      reticle.classList.add('hidden');
+      autoPlaceStone();
+      startNarration();
+    }
+
+    function autoPlaceStone() {
+      modelStage.style.display = 'block';
+      modelStage.classList.remove('placed');
+      void modelStage.offsetWidth;
+      modelStage.classList.add('placed');
+      modelState.textContent = 'Model placed';
+      stoneShadow.classList.add('visible');
+      updateScale();
+      updateHeight();
+      flashSunPulse();
+    }
+
+    function flashSunPulse() {
+      sunPulse.classList.remove('flash');
+      void sunPulse.offsetWidth;
+      sunPulse.classList.add('flash');
+    }
+
+    function stopNarration() {
+      if (usingSpeech) {
+        window.speechSynthesis.cancel();
+      }
+      audioState.textContent = 'Narration stopped';
+    }
+
+    function startNarration() {
+      if (!usingSpeech) {
+        audioState.textContent = 'Speech not supported';
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(narrationText.join(' '));
+      utterance.rate = 0.9;
+      utterance.pitch = 0.95;
+      utterance.volume = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const preferred =
+        voices.find(v => /Google UK English Male|Microsoft Ryan|Daniel|Thomas|Male/i.test(v.name)) ||
+        voices.find(v => /en-GB|en-IE|en-US/i.test(v.lang)) ||
+        voices[0];
+      if (preferred) utterance.voice = preferred;
+      utterance.onstart = () => audioState.textContent = 'Narration playing';
+      utterance.onend = () => audioState.textContent = 'Narration complete';
+      utterance.onerror = () => audioState.textContent = 'Narration unavailable';
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function resetView() {
+      aligned = false;
+      modelStage.style.display = 'none';
+      statusBox.style.display = 'none';
+      alignChip.textContent = 'Not aligned';
+      reticle.classList.remove('hidden');
+      modelState.textContent = 'Model hidden';
+      stoneShadow.classList.remove('visible');
+      stopNarration();
+      audioState.textContent = 'Narration ready';
+      scaleSlider.value = '1.00';
+      heightSlider.value = '58';
+      updateScale();
+      updateHeight();
+    }
+
+    function updateScale() {
+      const value = parseFloat(scaleSlider.value);
+      modelStage.style.width = `${260 * value}px`;
+      modelStage.style.height = `${360 * value}px`;
+      scaleValue.textContent = `${value.toFixed(2)}x`;
+
+      const shadowWidth = 170 * value;
+      const shadowHeight = 36 * Math.max(0.8, value * 0.95);
+      stoneShadow.style.width = `${shadowWidth}px`;
+      stoneShadow.style.height = `${shadowHeight}px`;
+    }
+
+    function updateHeight() {
+      const value = parseInt(heightSlider.value, 10);
+      modelStage.style.top = `${value}%`;
+      heightValue.textContent = `${value}%`;
+
+      // Keep shadow slightly below the model for a more grounded feel.
+      const bottomOffset = Math.max(12, 86 - value);
+      stoneShadow.style.bottom = `${bottomOffset}px`;
+    }
+
+    enableCameraBtn.addEventListener('click', enableCamera);
+    lockBtn.addEventListener('click', lockAlignment);
+    resetBtn.addEventListener('click', resetView);
+    replayNarrationBtn.addEventListener('click', startNarration);
+    stopNarrationBtn.addEventListener('click', stopNarration);
+    scaleSlider.addEventListener('input', updateScale);
+    heightSlider.addEventListener('input', updateHeight);
+
+    // Some browsers load voices asynchronously.
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {};
+    }
+
+    updateScale();
+    updateHeight();
+  </script>
+</body>
+</html>
