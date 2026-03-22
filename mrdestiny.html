@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stone of Destiny MR Overlay</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#f6f4ef;
+      --card:#ffffff;
+      --text:#2d2418;
+      --muted:#6b6256;
+      --accent:#254d2c;
+      --accent-soft:#dfeedd;
+      --line:#ddd6cb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.4;
+    }
+    .wrap{
+      max-width:720px;
+      margin:0 auto;
+      padding:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px;
+      margin-bottom:16px;
+      box-shadow:0 1px 0 rgba(0,0,0,.03);
+    }
+    h1{
+      font-size:2rem;
+      margin:0 0 8px 0;
+      color:#6a5126;
+    }
+    .lede{
+      color:var(--muted);
+      margin:0;
+    }
+    .steps{
+      margin:12px 0 0;
+      padding-left:20px;
+      color:var(--muted);
+    }
+    .status{
+      background:var(--accent-soft);
+      color:var(--accent);
+      border:1px solid #bdd7bf;
+      border-radius:18px;
+      padding:14px 16px;
+      font-weight:700;
+      display:none;
+      margin-bottom:14px;
+    }
+    .camera-shell{
+      position:relative;
+      width:100%;
+      aspect-ratio: 9 / 16;
+      background:#000;
+      border-radius:24px;
+      overflow:hidden;
+      border:2px solid #221a13;
+    }
+    video#camera{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#000;
+    }
+    .overlay-center{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+    .reticle{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:180px;
+      height:180px;
+      transform:translate(-50%,-50%);
+      border:5px solid rgba(121,255,131,.9);
+      border-radius:50%;
+      box-shadow:0 0 24px rgba(121,255,131,.35);
+      opacity:.85;
+      transition:opacity .2s ease;
+    }
+    .reticle.hidden{opacity:0}
+    .chip{
+      position:absolute;
+      bottom:18px;
+      background:rgba(22,20,18,.82);
+      color:#fff;
+      padding:10px 16px;
+      border-radius:999px;
+      font-size:1rem;
+      font-weight:700;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .chip.left{left:16px}
+    .chip.right{right:16px}
+    .model-stage{
+      position:absolute;
+      left:50%;
+      top:56%;
+      transform:translate(-50%,-50%);
+      width:260px;
+      height:360px;
+      display:none;
+      pointer-events:auto;
+      z-index:3;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,.35));
+    }
+    model-viewer{
+      width:100%;
+      height:100%;
+      background:transparent;
+      --poster-color: transparent;
+    }
+    .hud{
+      position:absolute;
+      top:14px;
+      left:14px;
+      right:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      z-index:4;
+    }
+    .pill{
+      background:rgba(255,255,255,.9);
+      color:#2b231b;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:.92rem;
+      font-weight:700;
+      border:1px solid rgba(0,0,0,.08);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .controls-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .control{
+      background:#faf8f4;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .control label{
+      display:block;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .value{
+      color:var(--muted);
+      font-size:.92rem;
+      margin-left:6px;
+      font-weight:400;
+    }
+    input[type=range]{
+      width:100%;
+    }
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    button{
+      appearance:none;
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .primary{
+      background:#2c241d;
+      color:#fff;
+    }
+    .secondary{
+      background:#ece7df;
+      color:#2c241d;
+      border:1px solid var(--line);
+    }
+    .note{
+      color:var(--muted);
+      margin-top:10px;
+      font-size:.95rem;
+    }
+    @media (max-width:560px){
+      .controls-grid{grid-template-columns:1fr}
+      h1{font-size:1.65rem}
+      .model-stage{width:220px;height:310px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Stone of Destiny MR</h1>
+      <p class="lede">Allow camera access, face the Stone of Destiny, then place the model into the live view.</p>
+      <ol class="steps">
+        <li>Enable camera</li>
+        <li>Stand facing the stone</li>
+        <li>Tap <strong>Lock Alignment</strong></li>
+        <li>Tap <strong>Place Stone</strong></li>
+        <li>Adjust size and height until it feels right</li>
+      </ol>
+    </div>
+
+    <div class="status card" id="statusBox">Alignment locked. You are facing the Stone of Destiny. Now place the model below.</div>
+
+    <div class="card">
+      <div class="camera-shell">
+        <video id="camera" autoplay playsinline muted></video>
+
+        <div class="hud">
+          <div class="pill" id="cameraState">Camera off</div>
+          <div class="pill" id="modelState">Model hidden</div>
+        </div>
+
+        <div class="overlay-center">
+          <div class="reticle" id="reticle"></div>
+        </div>
+
+        <div class="model-stage" id="modelStage">
+          <model-viewer
+            id="stoneModel"
+            src="./assets/model/liafail.glb"
+            alt="Stone of Destiny"
+            auto-rotate
+            camera-controls
+            shadow-intensity="1"
+            exposure="1.1"
+            interaction-prompt="none"
+            touch-action="pan-y"
+            ar-modes="webxr scene-viewer quick-look">
+          </model-viewer>
+        </div>
+
+        <div class="chip left">Stone of Destiny</div>
+        <div class="chip right" id="alignChip">Not aligned</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="secondary" id="enableCameraBtn">Enable Camera View</button>
+        <button class="secondary" id="lockBtn">Lock Alignment</button>
+        <button class="primary" id="placeBtn" disabled>Place Stone</button>
+        <button class="secondary" id="resetBtn">Reset View</button>
+      </div>
+
+      <p class="note">This version overlays the 3D model on the live camera view. It is the next step toward full AR placement.</p>
+    </div>
+
+    <div class="card">
+      <div class="controls-grid">
+        <div class="control">
+          <label for="scaleSlider">Model size <span class="value" id="scaleValue">1.00x</span></label>
+          <input type="range" id="scaleSlider" min="0.5" max="2.2" step="0.01" value="1.00">
+        </div>
+        <div class="control">
+          <label for="heightSlider">Vertical position <span class="value" id="heightValue">56%</span></label>
+          <input type="range" id="heightSlider" min="30" max="80" step="1" value="56">
+        </div>
+      </div>
+      <p class="note">Tip: if the stone feels too small, increase size first. If it looks like it is floating too high or low, adjust vertical position.</p>
+    </div>
+  </div>
+
+  <script>
+    const camera = document.getElementById('camera');
+    const enableCameraBtn = document.getElementById('enableCameraBtn');
+    const lockBtn = document.getElementById('lockBtn');
+    const placeBtn = document.getElementById('placeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const modelStage = document.getElementById('modelStage');
+    const stoneModel = document.getElementById('stoneModel');
+    const statusBox = document.getElementById('statusBox');
+    const reticle = document.getElementById('reticle');
+    const alignChip = document.getElementById('alignChip');
+    const cameraState = document.getElementById('cameraState');
+    const modelState = document.getElementById('modelState');
+
+    const scaleSlider = document.getElementById('scaleSlider');
+    const heightSlider = document.getElementById('heightSlider');
+    const scaleValue = document.getElementById('scaleValue');
+    const heightValue = document.getElementById('heightValue');
+
+    let stream = null;
+    let aligned = false;
+
+    async function enableCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
+          audio: false
+        });
+        camera.srcObject = stream;
+        cameraState.textContent = 'Camera live';
+      } catch (err) {
+        cameraState.textContent = 'Camera blocked';
+        alert('Camera access was not granted. Please allow camera access and try again.');
+      }
+    }
+
+    function lockAlignment() {
+      aligned = true;
+      placeBtn.disabled = false;
+      statusBox.style.display = 'block';
+      alignChip.textContent = 'Aligned';
+      reticle.classList.add('hidden');
+    }
+
+    function placeStone() {
+      if (!aligned) return;
+      modelStage.style.display = 'block';
+      modelState.textContent = 'Model visible';
+      updateScale();
+      updateHeight();
+    }
+
+    function resetView() {
+      aligned = false;
+      placeBtn.disabled = true;
+      modelStage.style.display = 'none';
+      statusBox.style.display = 'none';
+      alignChip.textContent = 'Not aligned';
+      reticle.classList.remove('hidden');
+      modelState.textContent = 'Model hidden';
+
+      scaleSlider.value = '1.00';
+      heightSlider.value = '56';
+      updateScale();
+      updateHeight();
+    }
+
+    function updateScale() {
+      const value = parseFloat(scaleSlider.value);
+      modelStage.style.width = `${260 * value}px`;
+      modelStage.style.height = `${360 * value}px`;
+      scaleValue.textContent = `${value.toFixed(2)}x`;
+    }
+
+    function updateHeight() {
+      const value = parseInt(heightSlider.value, 10);
+      modelStage.style.top = `${value}%`;
+      heightValue.textContent = `${value}%`;
+    }
+
+    enableCameraBtn.addEventListener('click', enableCamera);
+    lockBtn.addEventListener('click', lockAlignment);
+    placeBtn.addEventListener('click', placeStone);
+    resetBtn.addEventListener('click', resetView);
+    scaleSlider.addEventListener('input', updateScale);
+    heightSlider.addEventListener('input', updateHeight);
+
+    updateScale();
+    updateHeight();
+  </script>
+</body>
+</html>
