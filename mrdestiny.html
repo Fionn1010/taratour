@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stone of Destiny MR</title>
+
+  <!-- Model Viewer -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      text-align: center;
+    }
+
+    #cameraBox {
+      width: 100%;
+      height: 250px;
+      background: #000;
+      margin-top: 10px;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    #status {
+      margin: 15px;
+      padding: 12px;
+      background: #dff0d8;
+      border-radius: 10px;
+      color: #2d662d;
+      display: none;
+    }
+
+    #modelContainer {
+      display: none;
+      margin-top: 20px;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 400px;
+      background: #000;
+      border-radius: 12px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      background: #333;
+      color: white;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Stone of Destiny</h2>
+
+  <div id="cameraBox"></div>
+
+  <div id="status">
+    Alignment locked. You are facing the Stone of Destiny.
+  </div>
+
+  <button onclick="simulateAlignment()">Simulate Alignment</button>
+
+  <div id="modelContainer">
+    <model-viewer 
+      src="./assets/model/liafail.glb"
+      alt="Stone of Destiny"
+      auto-rotate
+      camera-controls>
+    </model-viewer>
+  </div>
+
+  <script>
+    function simulateAlignment() {
+      document.getElementById("status").style.display = "block";
+      document.getElementById("modelContainer").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
