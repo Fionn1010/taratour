@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara Tour</title>
+  <style>
+    :root{
+      --bg:#0d1117;
+      --bg-2:#111827;
+      --card:#151b23;
+      --card-2:#10161f;
+      --ink:#e7dcc7;
+      --muted:#a89d8a;
+      --line:#2a3442;
+      --accent:#8b6b3f;
+      --accent-2:#3e6f54;
+      --accent-soft:#17271e;
+      --warning:#d6a85f;
+      --warning-soft:#231b0d;
+      --shadow:0 24px 50px rgba(0,0,0,.34);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(139,107,63,.14), transparent 28%),
+        linear-gradient(180deg,var(--bg-2) 0%, var(--bg) 100%);
+    }
+    .shell{
+      max-width:1040px;
+      margin:0 auto;
+      padding:18px 16px 80px;
+    }
+    .hero,
+    .panel,
+    .stop{
+      background:linear-gradient(180deg,var(--card) 0%, var(--card-2) 100%);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero{
+      padding:22px;
+      margin-bottom:16px;
+      background:
+        radial-gradient(circle at top right, rgba(139,107,63,.16), transparent 28%),
+        linear-gradient(135deg,#171e28 0%, #10161d 100%);
+    }
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#1f2732;
+      color:#c5a777;
+      font-size:.88rem;
+      font-weight:700;
+      letter-spacing:.02em;
+      margin-bottom:12px;
+      border:1px solid #334154;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(1.9rem,4vw,3rem);
+      line-height:1.05;
+      color:#f0e4cb;
+    }
+    .lede{
+      margin:0;
+      color:var(--muted);
+      font-size:1.05rem;
+      line-height:1.55;
+      max-width:760px;
+    }
+    .top-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .panel{padding:18px}
+    .panel h2{
+      margin:0 0 14px;
+      font-size:1.05rem;
+      color:#f0e4cb;
+    }
+    .status-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .metric{
+      background:#0f141c;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      min-height:88px;
+    }
+    .metric .label{
+      display:block;
+      color:var(--muted);
+      font-size:.85rem;
+      margin-bottom:6px;
+    }
+    .metric .value{
+      font-weight:700;
+      line-height:1.35;
+      word-break:break-word;
+      color:#efe3cb;
+    }
+    .btn-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    button,
+    .button-link{
+      appearance:none;
+      border:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border-radius:16px;
+      padding:13px 16px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .15s ease, opacity .2s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover,.button-link:hover{transform:translateY(-1px)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .primary{background:var(--accent);color:#fff}
+    .secondary{background:#1b2330;color:#e7dcc7;border:1px solid var(--line)}
+    .ghost{background:#10161f;color:#d6c2a1;border:1px solid #334154}
+    .success{background:var(--accent-2);color:#fff}
+    .warning{
+      background:var(--warning-soft);
+      color:#edd3a7;
+      border:1px solid #54411a;
+      border-radius:16px;
+      padding:12px 14px;
+      font-size:.95rem;
+      line-height:1.45;
+    }
+    .compass-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:14px;
+    }
+    .compass{
+      width:min(260px,70vw);
+      aspect-ratio:1;
+      border-radius:50%;
+      border:2px solid #8b6b3f;
+      background:radial-gradient(circle at center,#17202a 0%, #111827 72%, #0d1117 100%);
+      position:relative;
+      overflow:hidden;
+    }
+    .compass .ring{
+      position:absolute;
+      inset:12px;
+      border:1px dashed rgba(231,220,199,.14);
+      border-radius:50%;
+    }
+    .marker{
+      position:absolute;
+      left:50%; top:50%;
+      transform-origin:50% calc(100% - 24px);
+      width:0; height:0;
+    }
+    .marker.you::before,
+    .marker.target::before{
+      content:"";
+      position:absolute;
+      left:-10px;
+      top:-102px;
+      border-left:10px solid transparent;
+      border-right:10px solid transparent;
+      border-bottom:110px solid currentColor;
+      filter:drop-shadow(0 6px 8px rgba(0,0,0,.26));
+    }
+    .marker.you{color:#e7dcc7}
+    .marker.target{color:#77b386}
+    .compass-label{
+      position:absolute;
+      font-weight:700;
+      color:#c4b18f;
+    }
+    .n{top:10px;left:50%;transform:translateX(-50%)}
+    .e{right:14px;top:50%;transform:translateY(-50%)}
+    .s{bottom:10px;left:50%;transform:translateX(-50%)}
+    .w{left:14px;top:50%;transform:translateY(-50%)}
+    .tara-word{
+      position:absolute;
+      inset:auto 0 26px 0;
+      text-align:center;
+      font-size:1.1rem;
+      font-weight:700;
+      color:#a98d63;
+    }
+    .helper{
+      color:var(--muted);
+      text-align:center;
+      margin:0;
+      line-height:1.45;
+    }
+    .stops-wrap{
+      display:grid;
+      gap:16px;
+      margin-top:16px;
+    }
+    .stop{
+      padding:18px;
+      scroll-margin-top:20px;
+      border-width:2px;
+    }
+    .stop.active{border-color:#5d8968; box-shadow:0 18px 42px rgba(44,90,63,.18)}
+    .stop.unlocked{background:linear-gradient(180deg,#171e28 0%, #10161d 100%)}
+    .stop.locked{opacity:.92}
+    .stop-header{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:12px;
+    }
+    .stop-number{
+      font-size:.86rem;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:#a98d63;
+      font-weight:700;
+      margin-bottom:5px;
+    }
+    .stop h3{
+      margin:0;
+      font-size:1.55rem;
+      color:#f0e4cb;
+    }
+    .tag{
+      flex:0 0 auto;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:.84rem;
+      font-weight:700;
+      border:1px solid var(--line);
+      background:#121924;
+      color:#bca989;
+    }
+    .tag.ready{background:var(--accent-soft); color:#93c39d; border-color:#284637}
+    .tag.locked{background:#141b24;color:#847867}
+    video{
+      width:100%;
+      border-radius:18px;
+      background:#000;
+      margin-bottom:12px;
+      aspect-ratio:16/9;
+    }
+    .play-tip,
+    .distance-note{
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.45;
+    }
+    .copy{
+      font-size:1.04rem;
+      line-height:1.65;
+      color:#ddd0ba;
+      margin:12px 0 0;
+    }
+    .copy p{margin:.2em 0}
+    .stop-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .footer-note{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:.95rem;
+      line-height:1.55;
+    }
+    code.inline{
+      background:#10161f;
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:8px;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:.9em;
+      color:#e7dcc7;
+    }
+    @media (max-width:900px){
+      .top-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:640px){
+      .status-grid{grid-template-columns:1fr}
+      .stop-header{flex-direction:column}
+      .stop h3{font-size:1.35rem}
+    }
+  
+    .cinema-overlay{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at center, rgba(17,24,39,.08), rgba(0,0,0,.82));
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .45s ease;
+      z-index:9998;
+    }
+    .cinema-overlay.show{opacity:1}
+    .cinema-caption{
+      position:fixed;
+      left:50%;
+      bottom:28px;
+      transform:translateX(-50%);
+      background:rgba(12,16,22,.78);
+      color:#f0e4cb;
+      border:1px solid rgba(139,107,63,.45);
+      border-radius:999px;
+      padding:10px 16px;
+      font-size:.95rem;
+      font-weight:700;
+      letter-spacing:.01em;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .35s ease, transform .35s ease;
+      z-index:9999;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      white-space:nowrap;
+      max-width:calc(100vw - 24px);
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .cinema-caption.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-4px);
+    }
+    .shell.dimmed{
+      opacity:.96;
+      transition:opacity .25s ease;
+    }
+    .hero, .panel, .stop{
+      transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease;
+    }
+    .stop video{
+      box-shadow:0 18px 38px rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.05);
+    }
+    .stop.active video{
+      box-shadow:0 22px 46px rgba(0,0,0,.36);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="eyebrow">Hill of Tara GPS Tour</div>
+      <h1>Walk the path of a new High King</h1>
+      <p class="lede">This tour now follows the rise of a High King through six story-led stops: arrival, procession, blessing, reflection, transformation, and recognition. It has been updated for your revised timeline and video file structure.</p>
+    </section>
+
+    <div class="top-grid">
+      <section class="panel">
+        <h2>Tour controls</h2>
+        <div class="status-grid">
+          <div class="metric"><span class="label">Tour progress</span><div class="value" id="progressLabel">Stop 1 of 6</div></div>
+          <div class="metric"><span class="label">GPS status</span><div class="value" id="gpsStatus">Not started</div></div>
+          <div class="metric"><span class="label">Current location</span><div class="value" id="currentLocation">—</div></div>
+          <div class="metric"><span class="label">Nearest trigger</span><div class="value" id="nearestTrigger">—</div></div>
+          <div class="metric"><span class="label">Distance to nearest</span><div class="value" id="distanceNearest">—</div></div>
+          <div class="metric"><span class="label">Selected stop</span><div class="value" id="selectedStopLabel">Entrance</div></div>
+          <div class="metric"><span class="label">Compass status</span><div class="value" id="compassStatus">Not started</div></div>
+          <div class="metric"><span class="label">Your heading</span><div class="value" id="yourHeading">—</div></div>
+          <div class="metric"><span class="label">Target bearing</span><div class="value" id="targetBearing">—</div></div>
+          <div class="metric"><span class="label">Turn needed</span><div class="value" id="turnNeeded">—</div></div>
+          <div class="metric"><span class="label">Distance to selected stop</span><div class="value" id="selectedDistance">—</div></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="primary" id="gpsBtn">Enable GPS Trigger</button>
+          <button class="secondary" id="compassBtn">Enable Compass</button>
+          <button class="ghost" id="demoBtn">Demo Next Stop</button>
+          <button class="ghost" id="resetBtn">Reset Tour</button>
+        </div>
+
+        <div class="warning" style="margin-top:14px">
+          Edit the <strong>GPS_STOPS</strong> list near the bottom of this file to set your final Tara coordinates. Only the Entrance and Banqueting Hall are filled right now. The other stops still need final lat/lon values.
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Direction guide</h2>
+        <div class="compass-wrap">
+          <div class="compass" aria-hidden="true">
+            <div class="ring"></div>
+            <div class="ring" style="inset:34px"></div>
+            <div class="marker you" id="youArrow"></div>
+            <div class="marker target" id="targetArrow"></div>
+            <div class="compass-label n">N</div>
+            <div class="compass-label e">E</div>
+            <div class="compass-label s">S</div>
+            <div class="compass-label w">W</div>
+            <div class="tara-word">Tara</div>
+          </div>
+          <p class="helper">Tap <strong>Enable Compass</strong> to start direction guidance. The pale arrow shows your heading, and the green arrow points toward the selected stop.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="stops-wrap" id="stopsWrap">
+      <article class="stop unlocked active" id="stop1" data-stop="1">
+        <div class="stop-header">
+          <div>
+            <div class="stop-number">Stop 1</div>
+            <h3>Entrance</h3>
+          </div>
+          <div class="tag ready" id="tag1">Ready</div>
+        </div>
+        <video controls preload="metadata" data-autoplay data-title="Entrance" data-scene="entrance" onclick="playFullscreen(this)">
+          <source src="./assets/video/01_entrance.mp4" type="video/mp4" />
+        </video>
+        <div class="play-tip">When this stop becomes visible, the tour will try to start the video automatically.</div>
+        <div class="distance-note" id="distance1">Distance: —</div>
+        <div class="copy">
+          <p>Step onto the Hill of Tara, the ancient seat of Ireland’s High Kings.</p>
+          <p>A new ruler approaches the hill, where ceremony, memory, and kingship will shape his fate.</p>
+          <p>This journey begins with arrival and ends with recognition.</p>
+        </div>
+        <div class="stop-actions">
+          <button class="secondary" onclick="replayStop(this)">Replay</button>
+          <button class="primary" onclick="goToStop(2, true)">Next Stop →</button>
+        </div>
+      </article>
+
+      <article class="stop locked" id="stop2" data-stop="2">
+        <div class="stop-header">
+          <div>
+            <div class="stop-number">Stop 2</div>
+            <h3>Banqueting Hall</h3>
+          </div>
+          <div class="tag locked" id="tag2">Locked until nearby</div>
+        </div>
+        <video controls preload="metadata" data-autoplay data-title="Banqueting Hall" data-scene="banquet" onclick="playFullscreen(this)">
+          <source src="./assets/video/02_banquet.mp4" type="video/mp4" />
+        </video>
+        <div class="play-tip">When this stop becomes visible, the tour will try to start the video automatically.</div>
+        <div class="distance-note" id="distance2">Distance: —</div>
+        <div class="copy">
+          <p>The king now walks the great earthen avenue of Tara.</p>
+          <p>Warriors and people line the banks to witness his passage up the hill.</p>
+          <p>This is the procession — the moment he is seen.</p>
+        </div>
+        <div class="stop-actions">
+          <button class="secondary" onclick="replayStop(this)">Replay</button>
+          <button class="primary" onclick="goToStop(3, true)">Next Stop →</button>
+        </div>
+      </article>
+
+      <article class="stop locked" id="stop3" data-stop="3">
+        <div class="stop-header">
+          <div>
+            <div class="stop-number">Stop 3</div>
+            <h3>Rath of the Synods</h3>
+          </div>
+          <div class="tag locked" id="tag3">Locked until nearby</div>
+        </div>
+        <video controls preload="metadata" data-autoplay data-title="Rath of the Synods" data-scene="rath" onclick="playFullscreen(this)">
+          <source src="./assets/video/03_rath.mp4" type="video/mp4" />
+        </video>
+        <div class="play-tip">When this stop becomes visible, the tour will try to start the video automatically.</div>
+        <div class="distance-note" id="distance3">Distance: —</div>
+        <div class="copy">
+          <p>Within the sacred earthworks, the king receives a blessing before the watching crowd.</p>
+          <p>The open enclosure, embankments, and distant palisade frame a ritual of legitimacy.</p>
+          <p>This is the moment of consecration.</p>
+        </div>
+        <div class="stop-actions">
+          <button class="secondary" onclick="replayStop(this)">Replay</button>
+          <button class="primary" onclick="goToStop(4, true)">Next Stop →</button>
+        </div>
+      </article>
+
+      <article class="stop locked" id="stop4" data-stop="4">
+        <div class="stop-header">
+          <div>
+            <div class="stop-number">Stop 4</div>
+            <h3>Mound of the Hostages</h3>
+          </div>
+          <div class="tag locked" id="tag4">Locked until nearby</div>
+        </div>
+        <video controls preload="metadata" data-autoplay data-title="Mound of the Hostages" data-scene="mound" onclick="playFullscreen(this)">
+          <source src="./assets/video/04_mound.mp4" type="video/mp4" />
+        </video>
+        <div class="play-tip">When this stop becomes visible, the tour will try to start the video automatically.</div>
+        <div class="distance-note" id="distance4">Distance: —</div>
+        <div class="copy">
+          <p>Before crowning comes reflection.</p>
+          <p>At the ancient burial mound, the future king pauses before the generations who came before him.</p>
+          <p>This is Tara’s oldest memory speaking to the living.</p>
+        </div>
+        <div class="stop-actions">
+          <button class="secondary" onclick="replayStop(this)">Replay</button>
+          <button class="primary" onclick="goToStop(5, true)">Next Stop →</button>
+        </div>
+      </article>
+
+      <article class="stop locked" id="stop5" data-stop="5">
+        <div class="stop-header">
+          <div>
+            <div class="stop-number">Stop 5</div>
+            <h3>Stone of Destiny</h3>
+          </div>
+          <div class="tag locked" id="tag5">Locked until nearby</div>
+        </div>
+        <video controls preload="metadata" data-autoplay data-title="Stone of Destiny" data-scene="stone" onclick="playFullscreen(this)">
+          <source src="./assets/video/05_stone.mp4" type="video/mp4" />
+        </video>
+        <div class="play-tip">When this stop becomes visible, the tour will try to start the video automatically.</div>
+        <div class="distance-note" id="distance5">Distance: —</div>
+        <div class="copy">
+          <p>The king places his hand upon the Stone of Destiny.</p>
+          <p>Wind, waiting, and changing light turn the moment into destiny.</p>
+          <p>Here, transformation becomes kingship.</p>
+        </div>
+        <div class="stop-actions">
+          <button class="secondary" onclick="replayStop(this)">Replay</button>
+          <a class="button-link success" href="./mrdestiny.html">Open AR View</a>
+          <button class="primary" onclick="goToStop(6, true)">Next Stop →</button>
+        </div>
+      </article>
+
+      <article class="stop locked" id="stop6" data-stop="6">
+        <div class="stop-header">
+          <div>
+            <div class="stop-number">Stop 6</div>
+            <h3>Teach Cormaic</h3>
+          </div>
+          <div class="tag locked" id="tag6">Locked until nearby</div>
+        </div>
+        <video controls preload="metadata" data-autoplay data-title="Teach Cormaic" data-scene="cormaic" onclick="playFullscreen(this)">
+          <source src="./assets/video/06_cormaic.mp4" type="video/mp4" />
+        </video>
+        <div class="play-tip">When this stop becomes visible, the tour will try to start the video automatically.</div>
+        <div class="distance-note" id="distance6">Distance: —</div>
+        <div class="copy">
+          <p>Within Teach Cormaic, the new king is acknowledged by those around him.</p>
+          <p>Firelight, timber, and the attention of warriors and nobles complete the journey.</p>
+          <p>This is not chaos or feast alone — it is recognition.</p>
+        </div>
+        <div class="stop-actions">
+          <button class="secondary" onclick="replayStop(this)">Replay</button>
+          <button class="primary" onclick="finishTour()">Finish Tour</button>
+        </div>
+      </article>
+    </section>
+
+    <p class="footer-note">Updated for your revised six-stop timeline and current video filenames in <code class="inline">./assets/video/</code>.</p>
+  </div>
+
+
+  <div class="cinema-overlay" id="cinemaOverlay"></div>
+  <div class="cinema-caption" id="cinemaCaption">Entering scene…</div>
+  <audio id="sceneAudio" preload="auto"></audio>
+<audio id="voiceAudio" preload="auto"></audio>
+
+  <script>
+    const GPS_STOPS = [
+      { id: 1, name: 'Entrance', lat: 53.58062, lon: -6.61191, radius: 24 },
+      { id: 2, name: 'Banqueting Hall', lat: 53.57993, lon: -6.61189, radius: 22 },
+      { id: 3, name: 'Rath of the Synods', lat: 0, lon: 0, radius: 18 },
+      { id: 4, name: 'Mound of the Hostages', lat: 0, lon: 0, radius: 18 },
+      { id: 5, name: 'Stone of Destiny', lat: 0, lon: 0, radius: 18 },
+      { id: 6, name: 'Teach Cormaic', lat: 0, lon: 0, radius: 18 }
+    ];
+
+    const gpsBtn = document.getElementById('gpsBtn');
+    const compassBtn = document.getElementById('compassBtn');
+    const demoBtn = document.getElementById('demoBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const gpsStatus = document.getElementById('gpsStatus');
+    const currentLocation = document.getElementById('currentLocation');
+    const nearestTrigger = document.getElementById('nearestTrigger');
+    const distanceNearest = document.getElementById('distanceNearest');
+    const selectedStopLabel = document.getElementById('selectedStopLabel');
+    const compassStatus = document.getElementById('compassStatus');
+    const yourHeading = document.getElementById('yourHeading');
+    const targetBearing = document.getElementById('targetBearing');
+    const turnNeeded = document.getElementById('turnNeeded');
+    const selectedDistance = document.getElementById('selectedDistance');
+    const progressLabel = document.getElementById('progressLabel');
+    const youArrow = document.getElementById('youArrow');
+    const targetArrow = document.getElementById('targetArrow');
+
+    let gpsWatchId = null;
+    let currentPosition = null;
+    let currentHeading = null;
+    let currentStop = 1;
+    let highestUnlocked = 1;
+    let autoPlayedStops = new Set();
+    let demoIndex = 1;
+    let deviceOrientationAttached = false;
+
+    function formatLatLon(lat, lon) {
+      return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    }
+
+    function metresText(value) {
+      if (!Number.isFinite(value)) return '—';
+      return value < 1000 ? `${Math.round(value)} m` : `${(value / 1000).toFixed(2)} km`;
+    }
+
+    function normalise(deg) {
+      return (deg % 360 + 360) % 360;
+    }
+
+    function shortestTurn(from, to) {
+      let diff = normalise(to - from);
+      if (diff > 180) diff -= 360;
+      return diff;
+    }
+
+    function turnInstruction(diff) {
+      if (!Number.isFinite(diff)) return '—';
+      if (Math.abs(diff) <= 12) return 'You are facing the stop';
+      if (diff > 0) return `Turn right ${Math.round(diff)}°`;
+      return `Turn left ${Math.round(Math.abs(diff))}°`;
+    }
+
+    function getDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const toRad = deg => deg * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function getBearing(lat1, lon1, lat2, lon2) {
+      const toRad = deg => deg * Math.PI / 180;
+      const toDeg = rad => rad * 180 / Math.PI;
+      const phi1 = toRad(lat1);
+      const phi2 = toRad(lat2);
+      const lambda = toRad(lon2 - lon1);
+      const y = Math.sin(lambda) * Math.cos(phi2);
+      const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(lambda);
+      return normalise(toDeg(Math.atan2(y, x)));
+    }
+
+    function validCoords(stop) {
+      return Number.isFinite(stop.lat) && Number.isFinite(stop.lon) && !(stop.lat === 0 && stop.lon === 0);
+    }
+
+    function updateProgress() {
+      progressLabel.textContent = `Stop ${currentStop} of ${GPS_STOPS.length}`;
+      selectedStopLabel.textContent = GPS_STOPS[currentStop - 1].name;
+    }
+
+    function unlockThrough(stopId) {
+      highestUnlocked = Math.max(highestUnlocked, stopId);
+      for (let i = 1; i <= GPS_STOPS.length; i++) {
+        const card = document.getElementById(`stop${i}`);
+        const tag = document.getElementById(`tag${i}`);
+        if (!card || !tag) continue;
+        const unlocked = i <= highestUnlocked;
+        card.classList.toggle('unlocked', unlocked);
+        card.classList.toggle('locked', !unlocked);
+        tag.classList.toggle('ready', unlocked);
+        tag.classList.toggle('locked', !unlocked);
+        tag.textContent = unlocked ? 'Ready' : 'Locked until nearby';
+      }
+    }
+
+    function markActive(stopId) {
+      currentStop = stopId;
+      updateProgress();
+      document.querySelectorAll('.stop').forEach(el => el.classList.remove('active'));
+      const el = document.getElementById(`stop${stopId}`);
+      if (el) el.classList.add('active');
+      updateCompassMetrics();
+    }
+
+    function tryPlayStop(stopId) {
+      const stop = document.getElementById(`stop${stopId}`);
+      if (!stop || autoPlayedStops.has(stopId)) return;
+      const video = stop.querySelector('video');
+      if (!video) return;
+      playFullscreen(video);
+      autoPlayedStops.add(stopId);
+      if (promise && typeof promise.catch === 'function') {
+        promise.catch(() => {});
+      }
+    }
+
+    function goToStop(stopId, userInitiated = false) {
+      unlockThrough(stopId);
+      markActive(stopId);
+      const el = document.getElementById(`stop${stopId}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (userInitiated) {
+        setTimeout(() => tryPlayStop(stopId), 350);
+      }
+    }
+
+    function updateDistanceLabels() {
+      GPS_STOPS.forEach(stop => {
+        const target = document.getElementById(`distance${stop.id}`);
+        if (!target) return;
+        if (!currentPosition || !validCoords(stop)) {
+          target.textContent = validCoords(stop) ? 'Distance: waiting for GPS' : 'Distance: add final coordinates';
+          return;
+        }
+        const d = getDistanceMeters(currentPosition.latitude, currentPosition.longitude, stop.lat, stop.lon);
+        target.textContent = `Distance: ${metresText(d)}`;
+      });
+    }
+
+    function updateCompassMetrics() {
+      const stop = GPS_STOPS[currentStop - 1];
+      if (!currentPosition || !validCoords(stop)) {
+        targetBearing.textContent = validCoords(stop) ? 'Waiting for GPS' : 'Add final coordinates';
+        selectedDistance.textContent = validCoords(stop) ? 'Waiting for GPS' : 'Add final coordinates';
+        turnNeeded.textContent = currentHeading == null ? 'Enable compass' : 'Waiting for stop coordinates';
+        targetArrow.style.transform = `rotate(0deg)`;
+        return;
+      }
+      const bearing = getBearing(currentPosition.latitude, currentPosition.longitude, stop.lat, stop.lon);
+      const dist = getDistanceMeters(currentPosition.latitude, currentPosition.longitude, stop.lat, stop.lon);
+      targetBearing.textContent = `${Math.round(bearing)}°`;
+      selectedDistance.textContent = metresText(dist);
+      targetArrow.style.transform = `rotate(${bearing}deg)`;
+      if (currentHeading == null) {
+        turnNeeded.textContent = 'Enable compass';
+      } else {
+        const diff = shortestTurn(currentHeading, bearing);
+        turnNeeded.textContent = turnInstruction(diff);
+      }
+    }
+
+    function handlePosition(position) {
+      currentPosition = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy
+      };
+
+      gpsStatus.textContent = `Live (${Math.round(position.coords.accuracy || 0)} m accuracy)`;
+      currentLocation.textContent = formatLatLon(currentPosition.latitude, currentPosition.longitude);
+
+      let nearest = null;
+      for (const stop of GPS_STOPS) {
+        if (!validCoords(stop)) continue;
+        const d = getDistanceMeters(currentPosition.latitude, currentPosition.longitude, stop.lat, stop.lon);
+        if (!nearest || d < nearest.distance) nearest = { stop, distance: d };
+        if (d <= stop.radius) {
+          unlockThrough(stop.id);
+          markActive(stop.id);
+          tryPlayStop(stop.id);
+        }
+      }
+
+      nearestTrigger.textContent = nearest ? nearest.stop.name : 'No configured stops yet';
+      distanceNearest.textContent = nearest ? metresText(nearest.distance) : '—';
+
+      updateDistanceLabels();
+      updateCompassMetrics();
+    }
+
+    function handlePositionError(error) {
+      gpsStatus.textContent = `GPS error: ${error.message || 'Unable to read location'}`;
+    }
+
+    function startGps() {
+      if (!('geolocation' in navigator)) {
+        gpsStatus.textContent = 'Geolocation not supported on this device';
+        return;
+      }
+      if (gpsWatchId != null) return;
+      gpsStatus.textContent = 'Starting GPS…';
+      gpsWatchId = navigator.geolocation.watchPosition(handlePosition, handlePositionError, {
+        enableHighAccuracy: true,
+        maximumAge: 3000,
+        timeout: 15000
+      });
+    }
+
+    function applyHeading(heading) {
+      currentHeading = normalise(heading);
+      yourHeading.textContent = `${Math.round(currentHeading)}°`;
+      youArrow.style.transform = `rotate(${currentHeading}deg)`;
+      updateCompassMetrics();
+    }
+
+    function setupCompassHandler() {
+      if (deviceOrientationAttached) return;
+      deviceOrientationAttached = true;
+
+      const onOrientation = event => {
+        let heading = null;
+        if (typeof event.webkitCompassHeading === 'number') {
+          heading = event.webkitCompassHeading;
+        } else if (typeof event.alpha === 'number') {
+          heading = 360 - event.alpha;
+        }
+        if (heading != null) {
+          compassStatus.textContent = 'Live';
+          applyHeading(heading);
+        }
+      };
+
+      window.addEventListener('deviceorientationabsolute', onOrientation, true);
+      window.addEventListener('deviceorientation', onOrientation, true);
+    }
+
+    async function startCompass() {
+      if (!window.DeviceOrientationEvent) {
+        compassStatus.textContent = 'Compass not supported on this device';
+        return;
+      }
+      try {
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission !== 'granted') {
+            compassStatus.textContent = 'Compass permission denied';
+            return;
+          }
+        }
+        compassStatus.textContent = 'Starting compass…';
+        setupCompassHandler();
+      } catch (error) {
+        compassStatus.textContent = `Compass error: ${error.message || 'Permission failed'}`;
+      }
+    }
+
+    function replayStop(button) {
+      const stop = button.closest('.stop');
+      if (!stop) return;
+      const video = stop.querySelector('video');
+      if (!video) return;
+      video.currentTime = 0;
+      playFullscreen(video);
+      if (promise && typeof promise.catch === 'function') {
+        promise.catch(() => {});
+      }
+    }
+
+    function finishTour() {
+      alert('Tour complete. You can return to any stop to replay the videos.');
+    }
+
+    function resetTour() {
+      if (gpsWatchId != null) {
+        navigator.geolocation.clearWatch(gpsWatchId);
+        gpsWatchId = null;
+      }
+      currentPosition = null;
+      currentHeading = null;
+      highestUnlocked = 1;
+      currentStop = 1;
+      autoPlayedStops = new Set();
+      gpsStatus.textContent = 'Not started';
+      currentLocation.textContent = '—';
+      nearestTrigger.textContent = '—';
+      distanceNearest.textContent = '—';
+      compassStatus.textContent = 'Not started';
+      yourHeading.textContent = '—';
+      targetBearing.textContent = '—';
+      turnNeeded.textContent = '—';
+      selectedDistance.textContent = '—';
+      youArrow.style.transform = 'rotate(0deg)';
+      targetArrow.style.transform = 'rotate(0deg)';
+      unlockThrough(1);
+      goToStop(1, false);
+      updateDistanceLabels();
+    }
+
+    gpsBtn.addEventListener('click', startGps);
+    compassBtn.addEventListener('click', startCompass);
+    demoBtn.addEventListener('click', () => {
+      demoIndex = demoIndex >= GPS_STOPS.length ? 1 : demoIndex + 1;
+      goToStop(demoIndex, true);
+    });
+    resetBtn.addEventListener('click', resetTour);
+
+    unlockThrough(1);
+    markActive(1);
+    updateDistanceLabels();
+
+    window.replayStop = replayStop;
+    window.goToStop = goToStop;
+    window.finishTour = finishTour;
+  
+
+const cinemaOverlay = document.getElementById('cinemaOverlay');
+const cinemaCaption = document.getElementById('cinemaCaption');
+const shell = document.querySelector('.shell');
+let activeVideo = null;
+let premiumWakeLock = null;
+let cleanupTimer = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator && !premiumWakeLock) {
+      premiumWakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (e) {}
+}
+
+function releaseWakeLock() {
+  if (premiumWakeLock) {
+    premiumWakeLock.release().catch(() => {});
+    premiumWakeLock = null;
+  }
+}
+
+function forceCleanupUi() {
+  cinemaOverlay.classList.remove('show');
+  cinemaCaption.classList.remove('show');
+  shell.classList.remove('dimmed');
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
+  releaseWakeLock();
+}
+
+function showCinemaLayer(videoElement) {
+  activeVideo = videoElement;
+  const title = videoElement.dataset.title || 'Scene';
+  cinemaCaption.textContent = title;
+  cinemaOverlay.classList.add('show');
+  cinemaCaption.classList.add('show');
+  shell.classList.add('dimmed');
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  requestWakeLock();
+}
+
+function scheduleCleanup() {
+  clearTimeout(cleanupTimer);
+  cleanupTimer = setTimeout(() => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      forceCleanupUi();
+  stopAudio();
+stopVoice();
+    }
+  }, 120);
+}
+
+function playFullscreen(videoElement) {
+  showCinemaLayer(videoElement);
+  const sceneKey = videoElement.dataset.scene;
+  if (sceneKey && audioMap[sceneKey]) {
+    playAudio(sceneKey);
+  if (sceneKey && voiceMap[sceneKey]) { playVoice(sceneKey); }
+  }
+  try {
+    if (videoElement.requestFullscreen) {
+      videoElement.requestFullscreen().catch(() => {});
+    } else if (videoElement.webkitEnterFullscreen) {
+      videoElement.webkitEnterFullscreen(); // iPhone Safari native video fullscreen
+    } else if (videoElement.webkitRequestFullscreen) {
+      videoElement.webkitRequestFullscreen();
+    } else if (videoElement.msRequestFullscreen) {
+      videoElement.msRequestFullscreen();
+    }
+  } catch (e) {}
+  const p = videoElement.play();
+  if (p && typeof p.catch === 'function') {
+    p.catch(() => {});
+  }
+}
+
+
+
+const audioMap = {
+  entrance: "assets/audio/01_entrance.mp3",
+  banquet: "assets/audio/02_banquet.mp3",
+  rath: "assets/audio/03_rath.mp3",
+  mound: "assets/audio/04_mound.mp3",
+  stone: "assets/audio/05_stone.mp3",
+  cormaic: "assets/audio/06_cormaic.mp3"
+};
+
+const sceneAudio = document.getElementById("sceneAudio");
+
+function playAudio(scene) {
+  const src = audioMap[scene];
+  if (!src) return;
+
+  sceneAudio.src = src;
+  sceneAudio.volume = 0;
+  sceneAudio.currentTime = 0;
+
+  setTimeout(() => {
+    sceneAudio.play().catch(()=>{});
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+      vol += 0.05;
+      if (vol >= 0.4) {
+        vol = 0.4;
+        clearInterval(fadeIn);
+      }
+      sceneAudio.volume = vol;
+    }, 100);
+  }, 400);
+}
+
+function stopAudio() {
+  let vol = sceneAudio.volume;
+  const fadeOut = setInterval(() => {
+    vol -= 0.05;
+    if (vol <= 0) {
+      vol = 0;
+      clearInterval(fadeOut);
+      sceneAudio.pause();
+      sceneAudio.currentTime = 0;
+    }
+    sceneAudio.volume = vol;
+  }, 100);
+}
+
+
+const voiceAudio = document.getElementById("voiceAudio");
+
+function playVoice(scene) {
+  const src = voiceMap[scene];
+  if (!src) return;
+
+  voiceAudio.src = src;
+  voiceAudio.volume = 0;
+  voiceAudio.currentTime = 0;
+
+  const delay = (scene === "entrance") ? 2200 : 1200;
+
+  setTimeout(() => {
+    voiceAudio.play().catch(()=>{});
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+      vol += 0.05;
+      if (vol >= 0.75) {
+        vol = 0.75;
+        clearInterval(fadeIn);
+      }
+      voiceAudio.volume = vol;
+    }, 100);
+  }, delay);
+}
+
+function stopVoice() {
+  let vol = voiceAudio.volume;
+  const fadeOut = setInterval(() => {
+    vol -= 0.06;
+    if (vol <= 0) {
+      vol = 0;
+      clearInterval(fadeOut);
+      voiceAudio.pause();
+      voiceAudio.currentTime = 0;
+    }
+    voiceAudio.volume = vol;
+  }, 80);
+}
+</script>
+</body>
+</html>
