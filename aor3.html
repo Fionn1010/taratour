@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara AR Tour · Banqueting Hall</title>
+  <meta name="description" content="Banqueting Hall AR stop for the Hill of Tara tour." />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1080px;margin:0 auto;padding:18px 16px 80px}
+    .hero,.section{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:24px;margin-bottom:18px}
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:.98}
+    .lede{margin:0;color:var(--muted);line-height:1.6;max-width:60ch}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:14px 18px;border-radius:16px;text-decoration:none;
+      font-weight:700;border:none;cursor:pointer;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
+    .section{padding:20px;margin-top:18px}
+    .section h2{margin:0 0 8px;font-size:1.45rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:16px}
+    model-viewer, video{
+      width:100%;
+      border-radius:18px;
+      background:#000;
+      border:1px solid rgba(255,255,255,.05);
+    }
+    model-viewer{height:430px}
+    video{aspect-ratio:16/9}
+    .callout{
+      margin-top:14px;padding:12px 14px;border-radius:16px;
+      background:#111826;border:1px solid var(--line);color:#d9ceb8;line-height:1.5
+    }
+    .flow{margin:12px 0 0 18px;color:var(--muted);line-height:1.7}
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .metric{
+      background:#111826;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .metric .label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:6px}
+    .metric .value{font-weight:700;color:#f1e5cd;line-height:1.35}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+      .meta{grid-template-columns:1fr}
+      model-viewer{height:360px}
+    }
+    @media (max-width:560px){
+      .shell{padding:14px 12px 60px}
+      .hero,.section{padding:16px}
+      .btn{width:100%}
+      model-viewer{height:320px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">AR Stop 2 · Banqueting Hall</div>
+      <h1>The king is seen for the first time</h1>
+      <p class="lede">This stop marks the real beginning of the story. At the Banqueting Hall, visitors should experience the king moving up the long earthen ceremonial avenue, watched by those gathered along the embankments.</p>
+      <div class="hero-actions">
+        <a class="btn btn-secondary" href="./aor2.html">← Back to Entrance</a>
+        <a class="btn btn-primary" href="#banquet-ar">Open this stop</a>
+      </div>
+    </section>
+
+    <section class="section" id="banquet-ar">
+      <h2>Stop 2 · Banqueting Hall AR</h2>
+      <p>This page gives you the structure for the Banqueting Hall while the final procession model is still being worked out.</p>
+
+      <div class="grid">
+        <div>
+          <model-viewer
+            src="./assets/model/banquet_king.glb"
+            alt="Banqueting Hall king model"
+            ar
+            ar-modes="scene-viewer quick-look webxr"
+            camera-controls
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1"
+            interaction-prompt="auto">
+          </model-viewer>
+
+          <div class="hero-actions" style="margin-top:12px">
+            <button class="btn btn-primary" onclick="launchBanquetAR()">Launch AR Scene</button>
+            <button class="btn btn-secondary" onclick="playBanquetVoice()">Play Narration</button>
+          </div>
+
+          <div class="callout">
+            <strong>Current placeholder model:</strong> <code>./assets/model/banquet_king.glb</code><br>
+            Start with a single king model first. Later you can swap it for a larger procession scene.
+          </div>
+        </div>
+
+        <div>
+          <video controls playsinline preload="metadata">
+            <source src="./assets/video/02_banquet.mp4" type="video/mp4" />
+          </video>
+
+          <div class="callout">
+            <strong>Reference video:</strong> <code>./assets/video/02_banquet.mp4</code><br>
+            Keep this here as your visual reference while the AR version is still being built out.
+          </div>
+
+          <div class="meta">
+            <div class="metric">
+              <span class="label">Narration file</span>
+              <div class="value"><code>./assets/audio/02_banquet_voice.mp3</code></div>
+            </div>
+            <div class="metric">
+              <span class="label">Best starter asset</span>
+              <div class="value">Single king model</div>
+            </div>
+            <div class="metric">
+              <span class="label">Direction</span>
+              <div class="value">Walking up the earthen avenue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Suggested build order</h2>
+      <p>Keep this stop simple first. Prove the Banqueting Hall AR moment works in the right place before making it more complex.</p>
+      <ul class="flow">
+        <li>Start with one king model only.</li>
+        <li>Place him facing up the ceremonial path.</li>
+        <li>Add narration to explain that this is the first moment he is truly seen.</li>
+        <li>Later, add 2 or 3 warriors, then crowd atmosphere, then more advanced AI moments.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Next stop</h2>
+      <p>Once this is stable, the next AR page can lead toward the Rath of the Synods.</p>
+      <div class="hero-actions">
+        <a class="btn btn-secondary" href="./aor2.html">Back to Entrance</a>
+        <a class="btn btn-primary" href="#">Next later: Rath of the Synods</a>
+      </div>
+    </section>
+  </main>
+
+  <audio id="banquetVoice" preload="auto">
+    <source src="./assets/audio/02_banquet_voice.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    function launchBanquetAR() {
+      const viewer = document.querySelector('model-viewer');
+      if (viewer && viewer.activateAR) {
+        viewer.activateAR();
+      }
+    }
+
+    function playBanquetVoice() {
+      const voice = document.getElementById('banquetVoice');
+      if (voice) {
+        voice.currentTime = 0;
+        voice.play().catch(() => {});
+      }
+    }
+  </script>
+</body>
+</html>
