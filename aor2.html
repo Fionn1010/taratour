@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara AR Tour</title>
+  <meta name="description" content="Separate AR tour experience for the Hill of Tara." />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --card:#141c29;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1080px;margin:0 auto;padding:18px 16px 80px}
+    .hero,.section,.stop{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:24px;margin-bottom:18px}
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:.98}
+    .lede{margin:0;color:var(--muted);line-height:1.6;max-width:58ch}
+    .hero-actions,.stop-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:14px 18px;border-radius:16px;text-decoration:none;
+      font-weight:700;border:none;cursor:pointer;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
+    .section{padding:20px;margin-top:18px}
+    .section h2{margin:0 0 8px;font-size:1.45rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:16px}
+    video, model-viewer{
+      width:100%;border-radius:18px;background:#000;border:1px solid rgba(255,255,255,.05)
+    }
+    video{aspect-ratio:16/9}
+    model-viewer{height:420px}
+    .callout{
+      margin-top:14px;padding:12px 14px;border-radius:16px;
+      background:#111826;border:1px solid var(--line);color:#d9ceb8;line-height:1.5
+    }
+    .stops{display:grid;gap:14px;margin-top:16px}
+    .stop{padding:18px}
+    .stop-header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .stop-no{
+      font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);font-weight:700;margin-bottom:6px
+    }
+    .stop h3{margin:0;font-size:1.35rem}
+    .tag{
+      padding:8px 12px;border-radius:999px;background:#182232;border:1px solid var(--line);color:#d9c39a;
+      font-size:.84rem;font-weight:700
+    }
+    ul.flow{
+      margin:12px 0 0 18px;padding:0;color:var(--muted);line-height:1.7
+    }
+    .small{font-size:.94rem;color:var(--muted)}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+      model-viewer{height:360px}
+    }
+    @media (max-width:560px){
+      .shell{padding:14px 12px 60px}
+      .hero,.section,.stop{padding:16px}
+      .btn{width:100%}
+      model-viewer{height:320px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Separate AR experience</div>
+      <h1>Hill of Tara AR Tour</h1>
+      <p class="lede">This page keeps the AR journey separate from the audio-visual tour for now. Visitors begin with a welcome video at the entrance gate, then launch AR moments stop by stop as they walk up the hill.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#entrance-stop">Start at Entrance</a>
+        <a class="btn btn-secondary" href="./tour.html">Back to Audio-Visual Tour</a>
+      </div>
+    </section>
+
+    <section class="section" id="entrance-stop">
+      <h2>Stop 1 · Entrance & Welcome</h2>
+      <p>Your existing welcome video can sit here. This is the place to remind visitors to watch their footing, stay aware of the landscape, and enjoy the AR journey.</p>
+
+      <div class="grid">
+        <div>
+          <video controls playsinline preload="metadata">
+            <source src="./assets/video/01_entrance.mp4" type="video/mp4" />
+          </video>
+          <div class="callout">
+            <strong>Placeholder currently uses:</strong> <code>./assets/video/01_entrance.mp4</code><br>
+            Swap this later if you decide to use a dedicated AR welcome video.
+          </div>
+        </div>
+
+        <div>
+          <model-viewer
+            src="./assets/model/ar_guide.glb"
+            alt="AR guide"
+            ar
+            ar-modes="scene-viewer quick-look webxr"
+            camera-controls
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1"
+            interaction-prompt="auto">
+          </model-viewer>
+
+          <div class="hero-actions" style="margin-top:12px">
+            <button class="btn btn-primary" onclick="launchGuideAR()">Launch AR Guide</button>
+            <button class="btn btn-secondary" onclick="playGuideVoice()">Play Guide Voice</button>
+          </div>
+
+          <div class="callout">
+            <strong>Guide model:</strong> <code>./assets/model/ar_guide.glb</code><br>
+            This can be your red-haired Celtic guide placed near the stone wall and gate, pointing visitors toward the Banqueting Hall.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Suggested entrance behaviour</h2>
+      <p>Keep this stop simple. The visitor should understand three things immediately: they are in the right place, this is an AR experience, and the guide will direct them up the correct path.</p>
+      <ul class="flow">
+        <li>Welcome video plays first.</li>
+        <li>Visitor taps <strong>Launch AR Guide</strong>.</li>
+        <li>The guide appears near the gate area and gestures up the hill.</li>
+        <li>A short voice line points them toward the Banqueting Hall.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>AR stop sequence</h2>
+      <p>This keeps the same broad story order as your other tour, but gives you a separate AR structure to build out one stop at a time.</p>
+
+      <div class="stops">
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Stop 1</div>
+              <h3>Entrance</h3>
+            </div>
+            <div class="tag">Welcome</div>
+          </div>
+          <p class="small">Guide appears near the wall and gate, welcomes visitors, and points them up the correct path.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Stop 2</div>
+              <h3>Banqueting Hall</h3>
+            </div>
+            <div class="tag">Procession</div>
+          </div>
+          <p class="small">The king is seen marching up the earthen ceremonial avenue.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Between 2 & 3</div>
+              <h3>Palisade</h3>
+            </div>
+            <div class="tag">Passing point</div>
+          </div>
+          <p class="small">Not necessarily a full tourist stop, but useful as a passing AR moment in the story.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Stop 3</div>
+              <h3>Rath of the Synods</h3>
+            </div>
+            <div class="tag">Blessing</div>
+          </div>
+          <p class="small">The king reaches the sacred enclosure for blessing and legitimacy.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Stop 4</div>
+              <h3>Mound of the Hostages</h3>
+            </div>
+            <div class="tag">Somber pause</div>
+          </div>
+          <p class="small">A reflective moment acknowledging the burial site and deep history of the hill.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Stop 5</div>
+              <h3>Stone of Destiny</h3>
+            </div>
+            <div class="tag">Inauguration</div>
+          </div>
+          <p class="small">The king approaches the stone and the moment of inauguration unfolds.</p>
+        </article>
+
+        <article class="stop">
+          <div class="stop-header">
+            <div>
+              <div class="stop-no">Stop 6</div>
+              <h3>Teach Cormaic</h3>
+            </div>
+            <div class="tag">Celebration</div>
+          </div>
+          <p class="small">The newly recognised king is celebrated inside the circular structure.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <audio id="guideVoice" preload="auto">
+    <source src="./assets/audio/01_entrance_voice.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    function launchGuideAR() {
+      const viewer = document.querySelector('model-viewer');
+      if (viewer && viewer.activateAR) {
+        viewer.activateAR();
+      }
+    }
+
+    function playGuideVoice() {
+      const voice = document.getElementById('guideVoice');
+      if (voice) {
+        voice.currentTime = 0;
+        voice.play().catch(() => {});
+      }
+    }
+  </script>
+</body>
+</html>
