@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara AR Tour · Stone of Destiny</title>
+  <meta name="description" content="Revised Stone of Destiny AR stop for the Hill of Tara tour." />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1080px;margin:0 auto;padding:18px 16px 80px}
+    .hero,.section{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:24px;margin-bottom:18px}
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:.98}
+    .lede{margin:0;color:var(--muted);line-height:1.6;max-width:60ch}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:14px 18px;border-radius:16px;text-decoration:none;
+      font-weight:700;border:none;cursor:pointer;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
+    .section{padding:20px;margin-top:18px}
+    .section h2{margin:0 0 8px;font-size:1.45rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:16px}
+    model-viewer, video{
+      width:100%;
+      border-radius:18px;
+      background:#000;
+      border:1px solid rgba(255,255,255,.05);
+    }
+    model-viewer{height:460px}
+    video{aspect-ratio:16/9}
+    .callout{
+      margin-top:14px;padding:12px 14px;border-radius:16px;
+      background:#111826;border:1px solid var(--line);color:#d9ceb8;line-height:1.5
+    }
+    .status{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#101723;
+      border:1px solid var(--line);
+      color:#d9ceb8;
+      font-size:.95rem;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .metric{
+      background:#111826;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .metric .label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:6px}
+    .metric .value{font-weight:700;color:#f1e5cd;line-height:1.35}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+      .meta{grid-template-columns:1fr}
+      model-viewer{height:380px}
+    }
+    @media (max-width:560px){
+      .shell{padding:14px 12px 60px}
+      .hero,.section{padding:16px}
+      .btn{width:100%}
+      model-viewer{height:320px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">AR Stop 5 · Stone of Destiny</div>
+      <h1>Revised AR launch test</h1>
+      <p class="lede">This version is simplified to make AR launch more reliably on iPhone and Android. It keeps the Stone of Destiny as the only AR object and gives clearer launch feedback.</p>
+      <div class="hero-actions">
+        <a class="btn btn-secondary" href="./aor3.html">← Back to Banqueting Hall</a>
+        <a class="btn btn-primary" href="#stone-ar">Test this stop</a>
+      </div>
+    </section>
+
+    <section class="section" id="stone-ar">
+      <h2>Stop 5 · Stone of Destiny AR</h2>
+      <p>Tap the gold button below to launch AR. On iPhone, this should open Quick Look. On Android, it should open Scene Viewer or WebXR depending on device support.</p>
+
+      <div class="grid">
+        <div>
+          <model-viewer
+            id="stoneViewer"
+            src="./assets/model/stone_of_destiny.glb"
+            alt="Stone of Destiny model"
+            ar
+            ar-modes="quick-look scene-viewer webxr"
+            ios-src="./assets/model/stone_of_destiny.glb"
+            camera-controls
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1"
+            interaction-prompt="none"
+            reveal="auto"
+            loading="eager">
+            <button slot="ar-button" class="btn btn-primary" style="position:absolute;left:50%;bottom:18px;transform:translateX(-50%);">
+              Launch AR Stone
+            </button>
+          </model-viewer>
+
+          <div class="hero-actions" style="margin-top:12px">
+            <button class="btn btn-primary" onclick="launchStoneAR()">Launch AR Stone</button>
+            <button class="btn btn-secondary" onclick="playStoneVoice()">Play Narration</button>
+          </div>
+
+          <div class="status" id="arStatus">AR status: waiting</div>
+
+          <div class="callout">
+            <strong>Current stone model:</strong> <code>./assets/model/stone_of_destiny.glb</code><br>
+            If AR still does not launch, the most likely cause is the model file itself not being AR-compatible for Quick Look / Scene Viewer.
+          </div>
+        </div>
+
+        <div>
+          <video controls playsinline preload="metadata">
+            <source src="./assets/video/05_stone.mp4" type="video/mp4" />
+          </video>
+
+          <div class="callout">
+            <strong>Reference video:</strong> <code>./assets/video/05_stone.mp4</code><br>
+            Use this as a fallback while testing AR launch behaviour.
+          </div>
+
+          <div class="meta">
+            <div class="metric">
+              <span class="label">Narration file</span>
+              <div class="value"><code>./assets/audio/05_stone_voice.mp3</code></div>
+            </div>
+            <div class="metric">
+              <span class="label">Suggested scale</span>
+              <div class="value">15–20 feet tall</div>
+            </div>
+            <div class="metric">
+              <span class="label">AR modes</span>
+              <div class="value">Quick Look / Scene Viewer / WebXR</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <audio id="stoneVoice" preload="auto">
+    <source src="./assets/audio/05_stone_voice.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const viewer = document.getElementById('stoneViewer');
+    const statusBox = document.getElementById('arStatus');
+
+    function setStatus(message) {
+      statusBox.textContent = 'AR status: ' + message;
+    }
+
+    function launchStoneAR() {
+      setStatus('trying to launch');
+      if (viewer && viewer.activateAR) {
+        viewer.activateAR();
+      } else {
+        setStatus('activateAR not available');
+      }
+    }
+
+    function playStoneVoice() {
+      const voice = document.getElementById('stoneVoice');
+      if (voice) {
+        voice.currentTime = 0;
+        voice.play().catch(() => {});
+      }
+    }
+
+    if (viewer) {
+      viewer.addEventListener('ar-status', (event) => {
+        const detail = event.detail && event.detail.status ? event.detail.status : 'unknown';
+        setStatus(detail);
+      });
+
+      viewer.addEventListener('load', () => {
+        setStatus('model loaded');
+      });
+
+      viewer.addEventListener('error', () => {
+        setStatus('model failed to load');
+      });
+    }
+  </script>
+</body>
+</html>
