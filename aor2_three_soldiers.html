@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara AR Tour · Three Soldiers Formation</title>
+  <meta name="description" content="Three walking soldiers in formation for phone testing." />
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1120px;margin:0 auto;padding:18px 16px 80px}
+    .hero,.section{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:24px;margin-bottom:18px}
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.25rem);line-height:1}
+    .lede{margin:0;color:var(--muted);line-height:1.6;max-width:64ch}
+    .hero-actions,.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:14px 18px;border-radius:16px;text-decoration:none;
+      font-weight:700;border:none;cursor:pointer;
+      background:#1b2433;color:var(--ink);border:1px solid var(--line);
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .section{padding:20px;margin-top:18px}
+    .section h2{margin:0 0 8px;font-size:1.45rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-top:16px}
+    #viewerWrap{
+      width:100%;
+      height:470px;
+      border-radius:18px;
+      background:#000;
+      border:1px solid rgba(255,255,255,.07);
+      overflow:hidden;
+      position:relative;
+    }
+    #viewerWrap canvas{display:block;width:100%;height:100%}
+    .panel{
+      background:#111826;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+    .callout{
+      margin-top:14px;padding:12px 14px;border-radius:16px;
+      background:#111826;border:1px solid var(--line);color:#d9ceb8;line-height:1.5
+    }
+    .readout{display:grid;gap:10px;margin-top:12px;color:#f1e5cd;font-weight:700}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    .badge{
+      display:inline-block;
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.84rem;
+      font-weight:700;
+    }
+    @media (max-width:860px){.grid{grid-template-columns:1fr}#viewerWrap{height:390px}}
+    @media (max-width:560px){.shell{padding:14px 12px 60px}.hero,.section{padding:16px}.btn{width:100%}#viewerWrap{height:340px}}
+  </style>
+  <script async src="https://unpkg.com/es-module-shims@1.10.0/dist/es-module-shims.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Phone Test · Three Soldiers</div>
+      <h1>Walking formation preview</h1>
+      <p class="lede">This version loads one animated walking character and clones it three times in code, so you can preview a small procession on your phone without needing a single giant 3-character model.</p>
+      <div class="hero-actions">
+        <a class="btn" href="./aor2.html">← Back to Entrance</a>
+        <button class="btn btn-primary" id="replayTopBtn">Replay walk</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Three-soldier formation</h2>
+      <p>The middle soldier leads, with left and right soldiers flanking slightly behind.</p>
+
+      <div class="grid">
+        <div>
+          <div id="viewerWrap"></div>
+
+          <div class="controls">
+            <button class="btn btn-primary" id="smallerBtn">Smaller</button>
+            <button class="btn" id="biggerBtn">Bigger</button>
+            <button class="btn" id="set1Btn">Set to 1%</button>
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn" id="replayBtn">Replay walk</button>
+          </div>
+
+          <div class="callout">
+            <strong>Model used:</strong> <code>./assets/model/ar_guide.glb</code><br>
+            This page clones that one model three times in code.
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <h2 style="margin-top:0">Live settings</h2>
+            <div class="readout">
+              <div>Current scale: <span id="scaleValue">1.00%</span></div>
+              <div>Formation: <span>Center lead, flanks behind</span></div>
+              <div>Animation: <span id="animValue">Loading...</span></div>
+            </div>
+            <div class="badge" id="statusBadge">Preparing scene</div>
+          </div>
+
+          <div class="callout">
+            <strong>Why the previous version likely failed:</strong><br>
+            Some phones choke on the Three.js addon imports unless the page includes an import map. This version adds that explicitly.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { SkeletonUtils } from 'three/addons/utils/SkeletonUtils.js';
+
+    const MODEL_SRC = './assets/model/ar_guide.glb';
+    const STORAGE_KEY = 'taraThreeSoldiersScale';
+    const DEFAULT_SCALE = 0.01;
+    const SCALE_STEP = 0.0025;
+    const MIN_SCALE = 0.001;
+    const MAX_SCALE = 0.05;
+
+    const wrap = document.getElementById('viewerWrap');
+    const scaleValue = document.getElementById('scaleValue');
+    const animValue = document.getElementById('animValue');
+    const statusBadge = document.getElementById('statusBadge');
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    wrap.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x05070a);
+
+    const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.01, 100);
+    camera.position.set(0, 1.2, 4.2);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.target.set(0, 0.95, 0);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x2a2f35, 1.4));
+    const dir = new THREE.DirectionalLight(0xffffff, 1.35);
+    dir.position.set(3.5, 7, 4);
+    scene.add(dir);
+    const fill = new THREE.DirectionalLight(0xb9d3ff, 0.45);
+    fill.position.set(-4, 3, -2);
+    scene.add(fill);
+
+    const ground = new THREE.Mesh(
+      new THREE.CircleGeometry(6, 64),
+      new THREE.MeshStandardMaterial({ color: 0x2a3136, roughness: 1, metalness: 0 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    const formationRoot = new THREE.Group();
+    scene.add(formationRoot);
+    const clock = new THREE.Clock();
+
+    let mixers = [];
+    let clips = [];
+    let currentScale = parseFloat(localStorage.getItem(STORAGE_KEY) || DEFAULT_SCALE);
+    if (Number.isNaN(currentScale)) currentScale = DEFAULT_SCALE;
+
+    function clampScale(value) {
+      return Math.min(MAX_SCALE, Math.max(MIN_SCALE, value));
+    }
+
+    function updateScaleReadout() {
+      scaleValue.textContent = `${(currentScale * 100).toFixed(2)}%`;
+    }
+
+    function applyScale() {
+      currentScale = clampScale(currentScale);
+      formationRoot.scale.setScalar(currentScale);
+      localStorage.setItem(STORAGE_KEY, String(currentScale));
+      updateScaleReadout();
+    }
+
+    function setStatus(text, animText) {
+      statusBadge.textContent = text;
+      if (animText) animValue.textContent = animText;
+    }
+
+    function replayAnimations() {
+      if (!mixers.length || !clips.length) return;
+      mixers.forEach((mixer, i) => {
+        mixer.stopAllAction();
+        const action = mixer.clipAction(clips[0]);
+        action.reset();
+        action.setLoop(THREE.LoopRepeat, Infinity);
+        action.enabled = true;
+        action.play();
+        mixer.update(i * 0.12);
+      });
+      setStatus('Animation playing', 'Walk loop active');
+    }
+
+    function createFormation(baseScene, animationClips) {
+      const positions = [
+        new THREE.Vector3(0, 0, 0.00),
+        new THREE.Vector3(-0.55, 0, 0.18),
+        new THREE.Vector3(0.55, 0, 0.18)
+      ];
+
+      positions.forEach((pos, index) => {
+        const clone = SkeletonUtils.clone(baseScene);
+        clone.position.copy(pos);
+        clone.rotation.y = Math.PI;
+        formationRoot.add(clone);
+
+        const mixer = new THREE.AnimationMixer(clone);
+        mixers.push(mixer);
+
+        if (animationClips.length > 0) {
+          const action = mixer.clipAction(animationClips[0]);
+          action.setLoop(THREE.LoopRepeat, Infinity);
+          action.play();
+          mixer.update(index * 0.12);
+        }
+      });
+    }
+
+    const loader = new GLTFLoader();
+    loader.load(
+      MODEL_SRC,
+      (gltf) => {
+        clips = gltf.animations || [];
+        createFormation(gltf.scene, clips);
+        applyScale();
+        replayAnimations();
+        setStatus('Ready on phone', clips.length ? 'Walk loop active' : 'No animation clip found');
+      },
+      undefined,
+      (error) => {
+        console.error(error);
+        setStatus('Model failed to load', 'Check model path or module imports');
+      }
+    );
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      mixers.forEach((mixer) => mixer.update(delta));
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    function resize() {
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', resize);
+
+    document.getElementById('smallerBtn').addEventListener('click', () => { currentScale -= SCALE_STEP; applyScale(); });
+    document.getElementById('biggerBtn').addEventListener('click', () => { currentScale += SCALE_STEP; applyScale(); });
+    document.getElementById('set1Btn').addEventListener('click', () => { currentScale = 0.01; applyScale(); });
+    document.getElementById('resetBtn').addEventListener('click', () => { currentScale = DEFAULT_SCALE; applyScale(); });
+    document.getElementById('replayBtn').addEventListener('click', replayAnimations);
+    document.getElementById('replayTopBtn').addEventListener('click', replayAnimations);
+
+    updateScaleReadout();
+  </script>
+</body>
+</html>
