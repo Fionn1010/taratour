@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>aor8 · Palisade AR Test</title>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+</head>
+
+<body style="font-family: Arial; background:#111; color:#eee; padding:20px">
+
+<h2>Palisade Test (aor8)</h2>
+
+<div style="margin-bottom:10px;">
+<button onclick="smaller()">Smaller</button>
+<button onclick="bigger()">Bigger</button>
+<button onclick="raise()">Raise</button>
+<button onclick="lower()">Lower</button>
+<button onclick="resetHeight()">Reset Height</button>
+<button onclick="launchAR()">Launch AR</button>
+</div>
+
+<p>Scale: <span id="scale">1</span></p>
+<p>Height: <span id="height">0</span></p>
+
+<model-viewer
+id="viewer"
+src="./assets/model/palisade.glb"
+ar
+ar-modes="webxr scene-viewer quick-look"
+camera-controls
+auto-rotate
+style="width:100%; height:500px;">
+</model-viewer>
+
+<script>
+let scale = 1;
+let height = 0;
+
+const viewer = document.getElementById('viewer');
+
+function update(){
+  viewer.scale = scale + " " + scale + " " + scale;
+  viewer.style.transform = `translateY(${height}px)`;
+  document.getElementById('scale').innerText = scale.toFixed(2);
+  document.getElementById('height').innerText = height.toFixed(1);
+}
+
+function smaller(){ scale -= 0.1; update(); }
+function bigger(){ scale += 0.1; update(); }
+
+function raise(){ height -= 10; update(); }
+function lower(){ height += 10; update(); }
+function resetHeight(){ height = 0; update(); }
+
+function launchAR(){
+  viewer.activateAR();
+}
+
+update();
+</script>
+
+</body>
+</html>
