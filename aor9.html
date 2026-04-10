@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hill of Tara · Belly Photo AR</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:rgba(11,15,20,.82);
+      --text:#efe3cc;
+      --accent:#d4b27a;
+      --muted:#1b2433;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family:Arial,sans-serif;
+      background:#000;
+      color:var(--text);
+    }
+    #app{position:fixed;inset:0;background:#000}
+    #camera{
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      object-fit:cover;
+      background:#000;
+      transform:scaleX(-1);
+      z-index:1;
+    }
+    #threeWrap, #threeWrap canvas{
+      position:absolute;inset:0;
+      width:100%!important;height:100%!important;
+      z-index:2;
+    }
+    .overlay{
+      position:absolute;left:0;right:0;z-index:10;
+      pointer-events:none;
+    }
+    .topbar{
+      top:0;padding:14px;
+      background:linear-gradient(to bottom,rgba(0,0,0,.7),rgba(0,0,0,0));
+    }
+    .titleCard{
+      max-width:420px;
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:12px 14px;
+      backdrop-filter:blur(8px);
+      pointer-events:auto;
+    }
+    .titleCard h1{margin:0 0 6px;font-size:20px}
+    .titleCard p{margin:0;font-size:14px;line-height:1.35}
+    .hint{font-size:12px;opacity:.9;margin-top:8px}
+    .bottomBar{
+      bottom:0;padding:12px;
+      background:linear-gradient(to top,rgba(0,0,0,.82),rgba(0,0,0,0));
+    }
+    .controls{
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+      pointer-events:auto;
+    }
+    button,a.buttonLink{
+      border:none;border-radius:12px;padding:12px 14px;font-size:15px;
+      cursor:pointer;text-decoration:none;display:inline-block;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .primary{background:var(--accent);color:#140f09;font-weight:700}
+    .secondary{background:var(--muted);color:var(--text)}
+    .sliderWrap{
+      display:flex;align-items:center;gap:10px;
+      background:var(--panel);padding:10px 12px;border-radius:12px;
+      min-width:210px;
+    }
+    input[type=range]{width:120px}
+    #status{
+      position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      z-index:20;background:rgba(0,0,0,.82);color:#fff;padding:12px 16px;
+      border-radius:12px;max-width:92vw;text-align:center;display:none;
+    }
+    #snapshotPanel{
+      position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.94);
+      display:none;flex-direction:column;align-items:center;justify-content:center;
+      gap:14px;padding:18px;
+    }
+    #snapshotPreview{
+      max-width:100%;max-height:74vh;border-radius:14px;
+      box-shadow:0 10px 40px rgba(0,0,0,.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <video id="camera" autoplay playsinline muted></video>
+    <div id="threeWrap"></div>
+
+    <div class="overlay topbar">
+      <div class="titleCard">
+        <h1>Hill of Tara · Belly Photo AR</h1>
+        <p>This version loads <strong>belly.glb</strong>, starts your camera, overlays the 3D model, and saves a combined photo.</p>
+        <div class="hint">Camera access usually needs HTTPS or localhost. Also keep <strong>belly.glb</strong> in the same folder as this HTML file.</div>
+      </div>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="overlay bottomBar">
+      <div class="controls">
+        <button class="primary" id="startBtn" type="button">Start Camera</button>
+        <button class="primary" id="photoBtn" type="button">Take Photo</button>
+        <button class="secondary" id="resetBtn" type="button">Reset Model</button>
+        <button class="secondary" id="turnBtn" type="button">Turn 15°</button>
+        <button class="secondary" id="leftBtn" type="button">←</button>
+        <button class="secondary" id="rightBtn" type="button">→</button>
+        <button class="secondary" id="upBtn" type="button">↑</button>
+        <button class="secondary" id="downBtn" type="button">↓</button>
+        <div class="sliderWrap">
+          <label for="scaleRange">Scale</label>
+          <input id="scaleRange" type="range" min="0.2" max="3" step="0.05" value="1" />
+          <span id="scaleLabel">1.00×</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="snapshotPanel">
+      <img id="snapshotPreview" alt="Your AR photo" />
+      <div class="controls" style="pointer-events:auto; justify-content:center;">
+        <a id="downloadBtn" class="buttonLink primary" href="#" download="hill-of-tara-belly-photo.png">Save Photo</a>
+        <button class="secondary" id="closePreviewBtn" type="button">Close Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const video = document.getElementById('camera');
+      const wrap = document.getElementById('threeWrap');
+      const statusBox = document.getElementById('status');
+      const startBtn = document.getElementById('startBtn');
+      const photoBtn = document.getElementById('photoBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const turnBtn = document.getElementById('turnBtn');
+      const scaleRange = document.getElementById('scaleRange');
+      const scaleLabel = document.getElementById('scaleLabel');
+      const snapshotPanel = document.getElementById('snapshotPanel');
+      const snapshotPreview = document.getElementById('snapshotPreview');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const closePreviewBtn = document.getElementById('closePreviewBtn');
+      const leftBtn = document.getElementById('leftBtn');
+      const rightBtn = document.getElementById('rightBtn');
+      const upBtn = document.getElementById('upBtn');
+      const downBtn = document.getElementById('downBtn');
+
+      let scene, camera, renderer, loader, model, currentStream;
+      const modelState = { x: 0, y: -0.35, z: -2.2, scale: 1, rotY: 0 };
+
+      function showStatus(message, persist) {
+        statusBox.textContent = message;
+        statusBox.style.display = 'block';
+        if (!persist) {
+          clearTimeout(showStatus._timer);
+          showStatus._timer = setTimeout(function () {
+            statusBox.style.display = 'none';
+          }, 2200);
+        }
+      }
+
+      function initThree() {
+        if (!window.THREE || !THREE.GLTFLoader) {
+          showStatus('Three.js failed to load. Check internet access.', true);
+          return;
+        }
+
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 100);
+        camera.position.set(0, 0, 0);
+
+        renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          preserveDrawingBuffer: true
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.domElement.style.pointerEvents = 'none';
+        wrap.innerHTML = '';
+        wrap.appendChild(renderer.domElement);
+
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 2.1);
+        scene.add(hemi);
+
+        const dir = new THREE.DirectionalLight(0xffffff, 1.7);
+        dir.position.set(2, 4, 3);
+        scene.add(dir);
+
+        loader = new THREE.GLTFLoader();
+        loadModel();
+        animate();
+      }
+
+      function loadModel() {
+        showStatus('Loading belly.glb…', true);
+
+        loader.load(
+          './belly.glb',
+          function (gltf) {
+            model = gltf.scene;
+            scene.add(model);
+
+            const box = new THREE.Box3().setFromObject(model);
+            const size = new THREE.Vector3();
+            const center = new THREE.Vector3();
+            box.getSize(size);
+            box.getCenter(center);
+
+            model.position.x -= center.x;
+            model.position.y -= center.y;
+            model.position.z -= center.z;
+
+            const maxDim = Math.max(size.x || 1, size.y || 1, size.z || 1);
+            const baseScale = 1 / maxDim;
+            model.userData.baseScale = baseScale;
+
+            applyModelState();
+            showStatus('Model loaded');
+          },
+          undefined,
+          function (error) {
+            console.error(error);
+            showStatus('Could not load belly.glb. Put belly.glb beside aor9.html.', true);
+          }
+        );
+      }
+
+      function applyModelState() {
+        if (!model) return;
+        const baseScale = model.userData.baseScale || 1;
+        model.position.set(modelState.x, modelState.y, modelState.z);
+        model.rotation.set(0, modelState.rotY, 0);
+        model.scale.setScalar(baseScale * modelState.scale);
+      }
+
+      async function startCamera() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showStatus('This browser does not support camera access.', true);
+          return;
+        }
+
+        try {
+          if (currentStream) {
+            currentStream.getTracks().forEach(function(track){ track.stop(); });
+          }
+
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: 'user',
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            },
+            audio: false
+          });
+
+          currentStream = stream;
+          video.srcObject = stream;
+          await video.play();
+          showStatus('Camera started');
+        } catch (error) {
+          console.error(error);
+          let msg = 'Camera failed. Open from HTTPS or localhost and allow camera permission.';
+          if (location.protocol === 'file:') {
+            msg = 'Camera is blocked from a local file on many phones. Run a local server or use HTTPS.';
+          }
+          showStatus(msg, true);
+        }
+      }
+
+      function capturePhoto() {
+        if (!video.videoWidth || !video.videoHeight) {
+          showStatus('Start the camera first.', true);
+          return;
+        }
+        if (!renderer) {
+          showStatus('3D renderer is not ready.', true);
+          return;
+        }
+
+        const out = document.createElement('canvas');
+        out.width = video.videoWidth;
+        out.height = video.videoHeight;
+        const ctx = out.getContext('2d');
+
+        ctx.translate(out.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, out.width, out.height);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(renderer.domElement, 0, 0, out.width, out.height);
+
+        const dataUrl = out.toDataURL('image/png');
+        snapshotPreview.src = dataUrl;
+        downloadBtn.href = dataUrl;
+        snapshotPanel.style.display = 'flex';
+      }
+
+      function resetModel() {
+        modelState.x = 0;
+        modelState.y = -0.35;
+        modelState.z = -2.2;
+        modelState.scale = 1;
+        modelState.rotY = 0;
+        scaleRange.value = '1';
+        scaleLabel.textContent = '1.00×';
+        applyModelState();
+        showStatus('Model reset');
+      }
+
+      function moveModel(dx, dy) {
+        modelState.x += dx;
+        modelState.y += dy;
+        applyModelState();
+      }
+
+      function turnModel() {
+        modelState.rotY += Math.PI / 12;
+        applyModelState();
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (renderer && scene && camera) {
+          renderer.render(scene, camera);
+        }
+      }
+
+      function onResize() {
+        if (!renderer || !camera) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      startBtn.addEventListener('click', startCamera);
+      photoBtn.addEventListener('click', capturePhoto);
+      resetBtn.addEventListener('click', resetModel);
+      turnBtn.addEventListener('click', turnModel);
+      leftBtn.addEventListener('click', function(){ moveModel(-0.12, 0); });
+      rightBtn.addEventListener('click', function(){ moveModel(0.12, 0); });
+      upBtn.addEventListener('click', function(){ moveModel(0, 0.12); });
+      downBtn.addEventListener('click', function(){ moveModel(0, -0.12); });
+      closePreviewBtn.addEventListener('click', function(){ snapshotPanel.style.display = 'none'; });
+
+      scaleRange.addEventListener('input', function (e) {
+        modelState.scale = parseFloat(e.target.value || '1');
+        scaleLabel.textContent = modelState.scale.toFixed(2) + '×';
+        applyModelState();
+      });
+
+      window.addEventListener('resize', onResize);
+
+      initThree();
+    })();
+  </script>
+</body>
+</html>
