@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hill of Tara · Tour Launcher</title>
+
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #121926;
+      --panel-2: #1b2433;
+      --text: #efe3cc;
+      --muted: #bfae8e;
+      --accent: #d4b27a;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 14px 40px rgba(0,0,0,0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0b0f14 0%, #111827 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 16px 36px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(212,178,122,0.18), rgba(27,36,51,0.95));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 700px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      text-decoration: none;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(212,178,122,0.55);
+    }
+
+    .badge {
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 14px;
+      color: #d8ccb6;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Hill of Tara · AR Tour</h1>
+      <p>Select a stop below to explore each part of the tour.</p>
+    </div>
+
+    <div class="grid">
+
+      <a class="card" href="aor1.html">
+        <span class="badge">AOR 1</span>
+        <h2>Entrance</h2>
+        <p>Welcome and introduction to the tour.</p>
+      </a>
+
+      <a class="card" href="aor2.html">
+        <span class="badge">AOR 2</span>
+        <h2>Banqueting Hall</h2>
+        <p>The great ceremonial avenue of kings.</p>
+      </a>
+
+      <a class="card" href="aor3.html">
+        <span class="badge">AOR 3</span>
+        <h2>Palisade</h2>
+        <p>The defensive wooden enclosure.</p>
+      </a>
+
+      <a class="card" href="aor4.html">
+        <span class="badge">AOR 4</span>
+        <h2>Rath of the Synods</h2>
+        <p>The political and ceremonial centre.</p>
+      </a>
+
+      <a class="card" href="aor5.html">
+        <span class="badge">AOR 5</span>
+        <h2>Mound of the Hostages</h2>
+        <p>Ancient burial chamber aligned with the sun.</p>
+      </a>
+
+      <a class="card" href="aor6.html">
+        <span class="badge">AOR 6</span>
+        <h2>Stone of Destiny</h2>
+        <p>The sacred stone of kingship.</p>
+      </a>
+
+      <a class="card" href="aor7.html">
+        <span class="badge">AOR 7</span>
+        <h2>Teach Cormaic</h2>
+        <p>The house of the High King.</p>
+      </a>
+
+      <a class="card" href="aor8.html">
+        <span class="badge">AOR 8</span>
+        <h2>St. Patrick</h2>
+        <p>Where pagan Ireland met Christianity.</p>
+      </a>
+
+    </div>
+  </div>
+</body>
+</html>
