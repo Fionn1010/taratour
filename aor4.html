@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AOR 4 · Palisade + King Test</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1120px;margin:0 auto;padding:18px 16px 80px}
+    .hero,.section{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:24px;margin-bottom:18px}
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.2rem);line-height:1}
+    .lede{margin:0;color:var(--muted);line-height:1.6;max-width:70ch}
+    .hero-actions,.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:14px 18px;border-radius:16px;text-decoration:none;
+      font-weight:700;border:none;cursor:pointer;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
+    .section{padding:20px;margin-top:18px}
+    .section h2{margin:0 0 8px;font-size:1.45rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.12fr .88fr;gap:18px;margin-top:16px}
+    #viewerWrap{
+      width:100%;
+      height:540px;
+      border-radius:18px;
+      background:#000;
+      border:1px solid rgba(255,255,255,.05);
+      overflow:hidden;
+      position:relative;
+    }
+    #viewerCanvas{
+      width:100%;
+      height:100%;
+      display:block;
+    }
+    .info-panel{
+      background:#111826;
+      padding:18px;
+      min-height:540px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.05);
+    }
+    .callout,.status{
+      margin-top:14px;padding:12px 14px;border-radius:16px;
+      background:#111826;border:1px solid var(--line);color:#d9ceb8;line-height:1.5
+    }
+    .status{font-size:.95rem}
+    .testpad{
+      margin-top:14px;
+      padding:14px;
+      background:#101723;
+      border:1px solid var(--line);
+      border-radius:16px;
+    }
+    .testpad label{
+      display:block;
+      color:var(--muted);
+      font-size:.9rem;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    input[type=range]{width:100%}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    .overlayTag{
+      position:absolute;
+      left:14px;
+      top:14px;
+      background:rgba(0,0,0,.6);
+      color:#efe3cc;
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:.9rem;
+      z-index:5;
+    }
+    @media (max-width:920px){
+      .grid{grid-template-columns:1fr}
+      .info-panel{min-height:auto}
+      #viewerWrap{height:420px}
+    }
+    @media (max-width:560px){
+      .shell{padding:14px 12px 60px}
+      .hero,.section{padding:16px}
+      .btn{width:100%}
+      #viewerWrap{height:340px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">AOR 4 · Two-model performance test</div>
+      <h1>Palisade with High King inside</h1>
+      <p class="lede">
+        This version uses a more iPhone-friendly Three.js setup. It loads <strong>palisade.glb</strong> and <strong>kingmodel.glb</strong> together in one inline scene.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-secondary" href="./aor.html">← Back to tour launcher</a>
+        <a class="btn btn-primary" href="#scene-test">Open performance test</a>
+      </div>
+    </section>
+
+    <section class="section" id="scene-test">
+      <h2>Palisade scene performance test</h2>
+      <p>This page is for checking whether both models can render together on iPhone. It does not use AR.</p>
+
+      <div class="grid">
+        <div>
+          <div id="viewerWrap">
+            <div class="overlayTag">Inline two-model scene</div>
+            <canvas id="viewerCanvas"></canvas>
+          </div>
+
+          <div class="controls">
+            <button class="btn btn-primary" onclick="toggleAutoRotate()">Toggle Rotation</button>
+            <button class="btn btn-secondary" onclick="resetScene()">Reset Scene</button>
+            <button class="btn btn-secondary" onclick="toggleKing()">Show / Hide King</button>
+            <button class="btn btn-secondary" onclick="togglePalisade()">Show / Hide Palisade</button>
+          </div>
+
+          <div class="testpad">
+            <label for="kingScale">King scale <span id="kingScaleLabel">10.0x</span></label>
+            <input id="kingScale" type="range" min="1" max="30" step="0.5" value="10" />
+          </div>
+
+          <div class="testpad">
+            <label for="kingX">King left / right <span id="kingXLabel">0.0</span></label>
+            <input id="kingX" type="range" min="-10" max="10" step="0.1" value="0" />
+          </div>
+
+          <div class="testpad">
+            <label for="kingZ">King forward / back <span id="kingZLabel">0.0</span></label>
+            <input id="kingZ" type="range" min="-10" max="10" step="0.1" value="0" />
+          </div>
+
+          <div class="status" id="sceneStatus">Status: waiting</div>
+        </div>
+
+        <div class="info-panel">
+          <h2 style="margin-top:0;">Scene setup</h2>
+          <p style="color:var(--muted);line-height:1.6;">
+            This page uses classic script-based Three.js rather than module imports, because that is often more reliable on iPhone Safari.
+          </p>
+
+          <div class="callout">
+            <strong>Model 1:</strong> <code>./assets/model/palisade.glb</code><br>
+            <strong>Model 2:</strong> <code>./assets/model/kingmodel.glb</code>
+          </div>
+
+          <div class="callout">
+            <strong>What to test:</strong><br>
+            1. Does the scene appear at all?<br>
+            2. Are both models visible?<br>
+            3. Does hiding one improve smoothness?<br>
+            4. Can you drag to orbit around the scene?
+          </div>
+
+          <div class="callout">
+            <strong>Important:</strong><br>
+            If this still fails on iPhone, the next fallback is to merge both models into one GLB in Blender, because that is much easier for Safari to render than two separate files in a live Three.js scene.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('viewerCanvas');
+    const wrap = document.getElementById('viewerWrap');
+    const statusBox = document.getElementById('sceneStatus');
+
+    const kingScale = document.getElementById('kingScale');
+    const kingX = document.getElementById('kingX');
+    const kingZ = document.getElementById('kingZ');
+    const kingScaleLabel = document.getElementById('kingScaleLabel');
+    const kingXLabel = document.getElementById('kingXLabel');
+    const kingZLabel = document.getElementById('kingZLabel');
+
+    let renderer, scene, camera, controls;
+    let palisadeModel = null;
+    let kingModel = null;
+    let autoRotate = true;
+
+    function setStatus(message) {
+      statusBox.textContent = 'Status: ' + message;
+    }
+
+    function init() {
+      if (!window.THREE || !THREE.OrbitControls || !THREE.GLTFLoader) {
+        setStatus('Three.js scripts failed to load');
+        return;
+      }
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+      camera.position.set(0, 14, 24);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(wrap.clientWidth, wrap.clientHeight, false);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.target.set(0, 4, 0);
+
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 2.2);
+      scene.add(hemi);
+
+      const dir = new THREE.DirectionalLight(0xffffff, 2.0);
+      dir.position.set(10, 20, 10);
+      scene.add(dir);
+
+      const floorGeo = new THREE.CircleGeometry(30, 48);
+      const floorMat = new THREE.MeshStandardMaterial({ color: 0x1a1f1a, roughness: 1 });
+      const floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -0.02;
+      scene.add(floor);
+
+      loadModels();
+      animate();
+      window.addEventListener('resize', onResize);
+    }
+
+    function loadModels() {
+      const loader = new THREE.GLTFLoader();
+
+      setStatus('loading palisade.glb');
+      loader.load(
+        './assets/model/palisade.glb?v=2',
+        function(gltf) {
+          palisadeModel = gltf.scene;
+          scene.add(palisadeModel);
+
+          const box = new THREE.Box3().setFromObject(palisadeModel);
+          const center = new THREE.Vector3();
+          box.getCenter(center);
+
+          palisadeModel.position.sub(center);
+          palisadeModel.position.y = 0;
+
+          setStatus('palisade loaded, loading kingmodel.glb');
+        },
+        undefined,
+        function(err) {
+          console.error(err);
+          setStatus('failed to load palisade.glb');
+        }
+      );
+
+      loader.load(
+        './assets/model/kingmodel.glb?v=2',
+        function(gltf) {
+          kingModel = gltf.scene;
+          scene.add(kingModel);
+
+          const box = new THREE.Box3().setFromObject(kingModel);
+          const center = new THREE.Vector3();
+          box.getCenter(center);
+
+          kingModel.position.sub(center);
+          kingModel.position.set(0, 0, 0);
+          kingModel.scale.set(10, 10, 10);
+
+          updateKingLabels();
+          setStatus('both models loaded');
+        },
+        undefined,
+        function(err) {
+          console.error(err);
+          setStatus('failed to load kingmodel.glb');
+        }
+      );
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (autoRotate && palisadeModel) palisadeModel.rotation.y += 0.003;
+      if (autoRotate && kingModel) kingModel.rotation.y += 0.003;
+
+      if (controls) controls.update();
+      if (renderer && scene && camera) renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      if (!renderer || !camera) return;
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+
+    function updateKingLabels() {
+      kingScaleLabel.textContent = Number(kingScale.value).toFixed(1) + 'x';
+      kingXLabel.textContent = Number(kingX.value).toFixed(1);
+      kingZLabel.textContent = Number(kingZ.value).toFixed(1);
+    }
+
+    kingScale.addEventListener('input', function() {
+      updateKingLabels();
+      if (kingModel) {
+        const s = Number(kingScale.value);
+        kingModel.scale.set(s, s, s);
+        setStatus('king scale changed');
+      }
+    });
+
+    kingX.addEventListener('input', function() {
+      updateKingLabels();
+      if (kingModel) {
+        kingModel.position.x = Number(kingX.value);
+        setStatus('king x changed');
+      }
+    });
+
+    kingZ.addEventListener('input', function() {
+      updateKingLabels();
+      if (kingModel) {
+        kingModel.position.z = Number(kingZ.value);
+        setStatus('king z changed');
+      }
+    });
+
+    window.toggleAutoRotate = function() {
+      autoRotate = !autoRotate;
+      setStatus(autoRotate ? 'rotation on' : 'rotation off');
+    };
+
+    window.resetScene = function() {
+      if (camera && controls) {
+        camera.position.set(0, 14, 24);
+        controls.target.set(0, 4, 0);
+        controls.update();
+      }
+
+      if (palisadeModel) {
+        palisadeModel.visible = true;
+        palisadeModel.rotation.set(0, 0, 0);
+      }
+
+      if (kingModel) {
+        kingModel.visible = true;
+        kingModel.rotation.set(0, 0, 0);
+        kingModel.position.set(0, 0, 0);
+        kingModel.scale.set(10, 10, 10);
+      }
+
+      kingScale.value = 10;
+      kingX.value = 0;
+      kingZ.value = 0;
+      updateKingLabels();
+      setStatus('scene reset');
+    };
+
+    window.toggleKing = function() {
+      if (kingModel) {
+        kingModel.visible = !kingModel.visible;
+        setStatus(kingModel.visible ? 'king shown' : 'king hidden');
+      }
+    };
+
+    window.togglePalisade = function() {
+      if (palisadeModel) {
+        palisadeModel.visible = !palisadeModel.visible;
+        setStatus(palisadeModel.visible ? 'palisade shown' : 'palisade hidden');
+      }
+    };
+
+    init();
+  </script>
+</body>
+</html>
