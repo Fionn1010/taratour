@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrance AR Tour</title>
+  <meta name="description" content="Hill of Tara entrance page with welcome, safety guidance, and inline AR preview." />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --card:#17202d;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1080px;margin:0 auto;padding:18px 16px 80px}
+    .hero,.section{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:24px;margin-bottom:18px}
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,5vw,3.4rem);line-height:.98}
+    .lede{margin:0;color:var(--muted);line-height:1.6;max-width:66ch}
+    .hero-actions,.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:14px 18px;border-radius:16px;text-decoration:none;
+      font-weight:700;border:none;cursor:pointer;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
+    .section{padding:20px;margin-top:18px}
+    .section h2{margin:0 0 8px;font-size:1.45rem}
+    .section p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:16px}
+    model-viewer,.info-panel{
+      width:100%;
+      border-radius:18px;
+      background:#000;
+      border:1px solid rgba(255,255,255,.05);
+    }
+    model-viewer{height:500px}
+    .info-panel{
+      background:#111826;
+      padding:18px;
+      min-height:500px;
+    }
+    .callout,.status{
+      margin-top:14px;padding:12px 14px;border-radius:16px;
+      background:#111826;border:1px solid var(--line);color:#d9ceb8;line-height:1.5
+    }
+    .status{font-size:.95rem}
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .metric{
+      background:#111826;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .metric .label{display:block;color:var(--muted);font-size:.84rem;margin-bottom:6px}
+    .metric .value{font-weight:700;color:#f1e5cd;line-height:1.35}
+    .testpad{
+      margin-top:14px;
+      padding:14px;
+      background:#101723;
+      border:1px solid var(--line);
+      border-radius:16px;
+    }
+    .testpad label{
+      display:block;
+      color:var(--muted);
+      font-size:.9rem;
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    input[type=range]{width:100%}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    ul{
+      margin:10px 0 0 18px;
+      color:#d9ceb8;
+      line-height:1.6;
+      padding:0;
+    }
+    .quote{
+      margin-top:14px;
+      padding:16px;
+      border-left:4px solid var(--gold);
+      background:#101723;
+      border-radius:14px;
+      color:#efe3cc;
+      line-height:1.7;
+    }
+    .quote strong{color:var(--gold)}
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr}
+      .meta{grid-template-columns:1fr}
+      model-viewer,.info-panel{min-height:380px;height:auto}
+      model-viewer{height:380px}
+    }
+    @media (max-width:560px){
+      .shell{padding:14px 12px 60px}
+      .hero,.section{padding:16px}
+      .btn{width:100%}
+      model-viewer{height:320px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">AOR 1 · Entrance</div>
+      <h1>Welcome to the Hill of Tara</h1>
+      <p class="lede">
+        This is the opening page of your Hill of Tara tour. It should feel calm, welcoming, and practical:
+        a short introduction, a safety reminder, and a clear first look at the experience before visitors move on to the next stop.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-secondary" href="./aor.html">← Back to tour launcher</a>
+        <a class="btn btn-primary" href="#entrance-test">Open entrance experience</a>
+      </div>
+    </section>
+
+    <section class="section" id="entrance-test">
+      <h2>Entrance welcome and start page</h2>
+      <p>
+        This page follows the same stable format as your working AR pages: visitors first see the model clearly in the page,
+        then they can try AR separately if they want.
+      </p>
+
+      <div class="grid">
+        <div>
+          <model-viewer
+            id="entranceViewer"
+            src="./entrance.glb"
+            alt="Entrance model"
+            ar
+            ar-modes="quick-look scene-viewer webxr"
+            camera-controls
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1"
+            interaction-prompt="auto"
+            reveal="auto"
+            loading="eager"
+            scale="1 1 1">
+            <button slot="ar-button" class="btn btn-primary" style="position:absolute;left:50%;bottom:18px;transform:translateX(-50%);">
+              Launch Entrance AR
+            </button>
+          </model-viewer>
+
+          <div class="controls">
+            <button class="btn btn-primary" onclick="launchEntranceAR()">Launch Entrance AR</button>
+            <button class="btn btn-secondary" onclick="playWelcome()">Play Welcome</button>
+            <button class="btn btn-secondary" onclick="toggleRotation()">Toggle Rotation</button>
+            <button class="btn btn-secondary" onclick="resetEntrance()">Reset Preview</button>
+          </div>
+
+          <div class="testpad">
+            <label for="scaleSlider">Inline preview scale <span id="scaleLabel">1.0x</span></label>
+            <input id="scaleSlider" type="range" min="0.5" max="4" step="0.1" value="1.0" oninput="updateScale(this.value)" />
+          </div>
+
+          <div class="status" id="arStatus">Status: waiting</div>
+
+          <div class="callout">
+            <strong>How to use this page:</strong><br>
+            First, check that the entrance model loads correctly in the page.<br>
+            Then play the welcome audio and try the AR launch button if you want to test placement on a phone.
+          </div>
+        </div>
+
+        <div class="info-panel">
+          <h2 style="margin-top:0;">Welcome message</h2>
+
+          <div class="quote">
+            <strong>Tour opening script:</strong><br><br>
+            Hey everybody, welcome to the Hill of Tara with Davey’s Tours. We’re so happy to have you joining us today.<br><br>
+            Now that you’re here, let me give you a quick rundown of what to expect. We’ll be taking you through a series of stops that showcase the ancient history and beauty of this incredible site.<br><br>
+            Just a quick note on safety: as we walk around, keep in mind that some areas might be a bit slippery or muddy, especially if it’s been raining. There’s a bit of hilly terrain, so just watch your step and wear comfortable shoes.<br><br>
+            Other than that, relax and enjoy, and let’s step back in time together.
+          </div>
+
+          <div class="meta">
+            <div class="metric">
+              <span class="label">Model source</span>
+              <div class="value"><code>./entrance.glb</code></div>
+            </div>
+            <div class="metric">
+              <span class="label">Welcome audio</span>
+              <div class="value"><code>./01_entrance.mp3</code></div>
+            </div>
+            <div class="metric">
+              <span class="label">Next stop</span>
+              <div class="value">AOR 2 · Banqueting Hall</div>
+            </div>
+          </div>
+
+          <div class="callout">
+            <strong>What this page should do well:</strong>
+            <ul>
+              <li>Make the visitor feel welcomed immediately</li>
+              <li>Give a simple safety briefing</li>
+              <li>Set the tone for the historical journey</li>
+              <li>Work even if AR is not launched</li>
+            </ul>
+          </div>
+
+          <div class="callout">
+            <strong>Important:</strong> Keep <code>aor1.html</code> and <code>entrance.glb</code> in the same folder. If you have the welcome audio file,
+            place it beside the page as <code>01_entrance.mp3</code>.
+          </div>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="./aor2.html">Continue to Banqueting Hall →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <audio id="welcomeAudio" preload="auto">
+    <source src="./01_entrance.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const viewer = document.getElementById('entranceViewer');
+    const statusBox = document.getElementById('arStatus');
+    const scaleLabel = document.getElementById('scaleLabel');
+    let rotating = true;
+
+    function setStatus(message) {
+      statusBox.textContent = 'Status: ' + message;
+    }
+
+    function launchEntranceAR() {
+      setStatus('trying to launch AR');
+      if (viewer && viewer.activateAR) {
+        viewer.activateAR();
+      } else {
+        setStatus('activateAR not available');
+      }
+    }
+
+    function playWelcome() {
+      const audio = document.getElementById('welcomeAudio');
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().then(() => {
+          setStatus('playing welcome audio');
+        }).catch(() => {
+          setStatus('audio could not play automatically');
+        });
+      }
+    }
+
+    function updateScale(value) {
+      const v = Number(value).toFixed(1);
+      viewer.scale = `${v} ${v} ${v}`;
+      scaleLabel.textContent = `${v}x`;
+      setStatus('inline scale changed to ' + v + 'x');
+    }
+
+    function toggleRotation() {
+      rotating = !rotating;
+      viewer.autoRotate = rotating;
+      setStatus(rotating ? 'rotation on' : 'rotation off');
+    }
+
+    function resetEntrance() {
+      viewer.scale = '1 1 1';
+      viewer.cameraOrbit = '0deg 75deg 105%';
+      viewer.autoRotate = true;
+      rotating = true;
+      document.getElementById('scaleSlider').value = 1.0;
+      scaleLabel.textContent = '1.0x';
+      setStatus('preview reset');
+    }
+
+    if (viewer) {
+      viewer.addEventListener('load', () => setStatus('model loaded inline'));
+      viewer.addEventListener('error', () => setStatus('model failed to load'));
+      viewer.addEventListener('ar-status', (event) => {
+        const detail = event.detail && event.detail.status ? event.detail.status : 'unknown';
+        setStatus('AR event: ' + detail);
+      });
+    }
+  </script>
+</body>
+</html>
