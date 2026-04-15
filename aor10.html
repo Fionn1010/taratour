@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AOR10 · Two Stones AR Quick Look</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#121925;
+      --line:#273244;
+      --ink:#efe3cc;
+      --muted:#b6ab99;
+      --gold:#d4b27a;
+      --gold2:#9f7d48;
+      --shadow:0 18px 42px rgba(0,0,0,.34);
+      --r:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top center, rgba(212,178,122,.12), transparent 26%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{
+      max-width:980px;
+      margin:0 auto;
+      padding:20px 16px 80px;
+    }
+    .hero,.section{
+      background:linear-gradient(180deg, #17202d 0%, #101722 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+    }
+    .hero{
+      padding:24px;
+      margin-bottom:18px;
+    }
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(212,178,122,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(2rem,5vw,3.2rem);
+      line-height:1;
+    }
+    .lede{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+      max-width:64ch;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:18px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px 18px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+      min-width:190px;
+    }
+    .btn-primary{
+      background:linear-gradient(180deg,var(--gold),var(--gold2));
+      color:#140f09;
+    }
+    .btn-secondary{
+      background:#1b2433;
+      color:var(--ink);
+      border:1px solid var(--line);
+    }
+    .section{
+      padding:20px;
+      margin-top:18px;
+    }
+    .section h2{
+      margin:0 0 8px;
+      font-size:1.4rem;
+    }
+    .section p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+    }
+    .card{
+      margin-top:16px;
+      padding:16px;
+      border-radius:18px;
+      background:#111826;
+      border:1px solid var(--line);
+    }
+    .status{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:#111826;
+      border:1px solid var(--line);
+      color:#d9ceb8;
+      line-height:1.5;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .metric{
+      background:#111826;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+    }
+    .metric .label{
+      display:block;
+      color:var(--muted);
+      font-size:.84rem;
+      margin-bottom:6px;
+    }
+    .metric .value{
+      font-weight:700;
+      color:#f1e5cd;
+      line-height:1.35;
+      word-break:break-word;
+    }
+    code{
+      background:#0f151f;
+      padding:2px 6px;
+      border-radius:6px;
+    }
+    ul{
+      margin:10px 0 0 18px;
+      color:#d9ceb8;
+      line-height:1.6;
+      padding:0;
+    }
+    @media (max-width:700px){
+      .meta{grid-template-columns:1fr}
+      .btn{width:100%}
+      .shell{padding:14px 12px 60px}
+      .hero,.section{padding:16px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">AOR10 · iPhone AR Test</div>
+      <h1>Two Stones in one AR scene</h1>
+      <p class="lede">
+        This version is built for iPhone Quick Look using your combined USDZ scene file, so both Stone of Destiny models can appear together in AR as one launchable scene.
+      </p>
+      <div class="actions">
+        <a
+          id="arLaunch"
+          class="btn btn-primary"
+          rel="ar"
+          href="./assets/model/two_stones.usdz"
+        >
+          Open Two Stones in AR
+        </a>
+        <a class="btn btn-secondary" href="./aor.html">← Back to tour launcher</a>
+      </div>
+      <div class="status" id="statusBox">Status: ready to launch Quick Look</div>
+    </section>
+
+    <section class="section">
+      <h2>Scene summary</h2>
+      <p>This page launches a single USDZ scene rather than two separate live web models. That is the correct structure for iPhone AR.</p>
+
+      <div class="meta">
+        <div class="metric">
+          <span class="label">AR scene file</span>
+          <div class="value"><code>./assets/model/two_stones.usdz</code></div>
+        </div>
+        <div class="metric">
+          <span class="label">Launch method</span>
+          <div class="value">iPhone Quick Look</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <strong>What to expect:</strong>
+        <ul>
+          <li>Tap <strong>Open Two Stones in AR</strong>.</li>
+          <li>Safari should hand the file to Quick Look.</li>
+          <li>The full scene should open as one AR object containing both stones.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <strong>If it still does not open:</strong>
+        <ul>
+          <li>Check that <code>two_stones.usdz</code> is exactly in <code>assets/model</code>.</li>
+          <li>Test from Safari on iPhone rather than from a file preview app.</li>
+          <li>Make sure the file is being served from your site and not blocked by a missing path.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const statusBox = document.getElementById('statusBox');
+    const arLaunch = document.getElementById('arLaunch');
+
+    function setStatus(message) {
+      statusBox.textContent = 'Status: ' + message;
+    }
+
+    arLaunch.addEventListener('click', () => {
+      setStatus('opening Quick Look scene');
+    });
+
+    window.addEventListener('pageshow', () => {
+      setStatus('ready to launch Quick Look');
+    });
+  </script>
+</body>
+</html>
