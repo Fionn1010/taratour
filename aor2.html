@@ -4,20 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AOR 2 · Banqueting Hall</title>
-  <meta name="description" content="Updated AR page for the Banqueting Hall at the Hill of Tara, using the king3warriors.glb procession model and the more polished working layout from AOR 5." />
+  <meta name="description" content="AR page for the Banqueting Hall at the Hill of Tara using banquet3king.glb, optimized to behave more reliably on mobile Safari." />
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
     :root{
       --bg:#07090d;
       --bg2:#121722;
       --panel:#111826;
-      --panel2:#0f1520;
       --line:#2a3344;
       --ink:#f0e5d0;
       --muted:#bcae97;
       --gold:#d9b679;
       --gold2:#a17841;
-      --ember:#ffb45a;
       --shadow:0 22px 50px rgba(0,0,0,.42);
       --r:24px;
     }
@@ -41,7 +39,7 @@
         radial-gradient(circle at 50% 0%, rgba(255,225,145,.15), transparent 26%),
         linear-gradient(180deg, rgba(255,191,94,.06), transparent 38%);
       opacity:0;
-      transition:opacity .4s ease;
+      transition:opacity .3s ease;
       z-index:0;
     }
     body.royal-on .royal-overlay{opacity:1}
@@ -54,27 +52,19 @@
       backdrop-filter:blur(3px);
     }
     .hero{position:relative;overflow:hidden;padding:26px;margin-bottom:18px}
-    .hero::before{
-      content:"";
-      position:absolute;
-      inset:-20% auto auto -10%;
-      width:300px;height:300px;border-radius:50%;
-      background:radial-gradient(circle, rgba(255,191,94,.16), transparent 70%);
-      pointer-events:none;
+    .eyebrow{
+      display:inline-block;padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(217,182,121,.30);color:var(--gold);
+      background:#182131;font-size:.88rem;font-weight:700;margin-bottom:12px
     }
-    .hero::after{
-      content:"";
-      position:absolute;
-      right:-80px;top:-80px;
-      width:260px;height:260px;border-radius:50%;
-      background:radial-gradient(circle, rgba(217,182,121,.10), transparent 72%);
-      pointer-events:none;
-    }
-    .eyebrow{display:inline-block;padding:8px 12px;border-radius:999px;border:1px solid rgba(217,182,121,.30);color:var(--gold);background:#182131;font-size:.88rem;font-weight:700;margin-bottom:12px}
     h1{margin:0 0 12px;font-size:clamp(2.2rem,5vw,3.6rem);line-height:.98;max-width:14ch}
     .lede{margin:0;color:var(--muted);line-height:1.7;max-width:68ch}
     .hero-actions,.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 18px;border-radius:16px;text-decoration:none;font-weight:700;border:none;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease, background .2s ease}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;padding:14px 18px;border-radius:16px;
+      text-decoration:none;font-weight:700;border:none;cursor:pointer;
+      transition:transform .15s ease, box-shadow .15s ease, background .2s ease
+    }
     .btn:hover{transform:translateY(-1px)}
     .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09;box-shadow:0 10px 20px rgba(159,125,72,.25)}
     .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
@@ -100,8 +90,7 @@
     code{background:#0f151f;padding:2px 6px;border-radius:6px}
     ul{margin:10px 0 0 18px;color:#d9ceb8;line-height:1.65;padding:0}
     .quote{margin-top:14px;padding:16px;border-left:4px solid var(--gold);background:#101723;border-radius:14px;color:#efe3cc;line-height:1.7}
-    .quote strong{color:var(--gold)}
-    .ritual-note strong{color:#ffd98a}
+    .quote strong,.ritual-note strong{color:#ffd98a}
     .legend-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
     .legend-card{background:#101723;border:1px solid var(--line);border-radius:18px;padding:14px}
     .legend-card h3{margin:0 0 6px;font-size:1rem;color:var(--gold)}
@@ -126,7 +115,7 @@
     <section class="hero">
       <div class="eyebrow">AOR 2 · Banqueting Hall</div>
       <h1>The king's procession approaches</h1>
-      <p class="lede">This updated Banqueting Hall page now uses <strong>king3warriors.glb</strong> and follows the stronger, more polished working structure of your latest AOR pages. The scene centers on the High King escorted by three Celtic warriors, ready for inline preview and AR placement.</p>
+      <p class="lede">This Banqueting Hall page uses <strong>banquet3king.glb</strong> and has been trimmed back a little to behave more reliably on mobile Safari while keeping the same cinematic feel.</p>
       <div class="hero-actions">
         <a class="btn btn-secondary" href="./aor.html">← Back to tour launcher</a>
         <a class="btn btn-primary" href="#banquet-stop">Open stop</a>
@@ -136,7 +125,7 @@
 
     <section class="section" id="banquet-stop">
       <h2>AOR 2 · Banqueting Hall</h2>
-      <p>Use the inline preview to inspect the full royal procession, then launch it into AR on supported phones. This version updates the model path and refreshes the page structure so it behaves more like your working AOR 5 page.</p>
+      <p>Use the inline preview to inspect the royal procession, then launch it into AR on supported phones. This version keeps the same layout but reduces the load on iPhone by avoiding aggressive preloading.</p>
 
       <div class="grid">
         <div>
@@ -148,20 +137,19 @@
             ar-modes="quick-look scene-viewer webxr"
             camera-controls
             auto-rotate
-            shadow-intensity="1"
-            exposure="1.06"
+            shadow-intensity="0.7"
+            exposure="1"
             interaction-prompt="auto"
             reveal="auto"
-            loading="eager"
+            loading="lazy"
             camera-orbit="0deg 78deg 105%"
-            scale="1.6 1.6 1.6">
+            scale="1.2 1.2 1.2">
             <button slot="ar-button" class="btn btn-primary" style="position:absolute;left:50%;bottom:18px;transform:translateX(-50%);">
               Launch AR Procession
             </button>
           </model-viewer>
 
           <div class="controls">
-            <button class="btn btn-primary" onclick="launchAR()">Launch AR Procession</button>
             <button class="btn btn-secondary" onclick="playWelcomeSequence()">Play Full Sequence</button>
             <button class="btn btn-secondary" onclick="playAudio('welcomeAudio', 'playing welcome audio', 'welcome audio could not play')">Play Welcome</button>
             <button class="btn btn-secondary" onclick="playAudio('voiceAudio', 'playing narration audio', 'narration audio could not play')">Play Narration</button>
@@ -170,23 +158,23 @@
           </div>
 
           <div class="testpad">
-            <label for="scaleSlider">Inline preview scale <span id="scaleLabel">1.6x</span></label>
-            <input id="scaleSlider" type="range" min="0.7" max="4" step="0.1" value="1.6" oninput="updateScale(this.value)" />
+            <label for="scaleSlider">Inline preview scale <span id="scaleLabel">1.2x</span></label>
+            <input id="scaleSlider" type="range" min="0.7" max="2.5" step="0.1" value="1.2" oninput="updateScale(this.value)" />
           </div>
 
           <div class="status" id="arStatus">Status: waiting</div>
 
           <div class="ritual-note">
             <strong>Presentation note:</strong><br>
-            This stop works best when the royal group feels substantial on screen. The procession starts above life-size in the inline preview so the king, guards, and flag bearer read clearly before launch into AR.
+            This version starts slightly smaller in the inline viewer to be a bit easier on mobile devices. You can still increase the preview size with the slider.
           </div>
 
           <div class="callout">
-            <strong>What changed:</strong><br>
-            The previous Banqueting Hall page used <code>./assets/model/kingmodel.glb</code>. This updated version points to <code>./assets/model/king3warriors.glb</code> and adopts the more modern layout and control flow from your newer working page.
+            <strong>Updated for stability:</strong><br>
+            This version uses <code>./assets/model/banquet3king.glb</code>, lowers the starting scale, uses gentler loading settings, and avoids preloading media too aggressively.
           </div>
 
-          <video controls playsinline preload="metadata" style="margin-top:14px;">
+          <video controls playsinline preload="none" style="margin-top:14px;">
             <source src="./assets/video/02_banquet.mp4" type="video/mp4" />
           </video>
         </div>
@@ -197,7 +185,7 @@
           <div class="meta">
             <div class="metric">
               <span class="label">Model source</span>
-              <div class="value"><code>./assets/model/king3warriors.glb</code></div>
+              <div class="value"><code>./assets/model/banquet3king.glb</code></div>
             </div>
             <div class="metric">
               <span class="label">Welcome audio</span>
@@ -216,7 +204,7 @@
             </div>
             <div class="metric">
               <span class="label">Opening scale</span>
-              <div class="value">1.6× for clearer group presentation</div>
+              <div class="value">1.2× for a lighter mobile preview</div>
             </div>
             <div class="metric">
               <span class="label">Next stop</span>
@@ -224,27 +212,27 @@
             </div>
           </div>
 
-          <div class="quote"><strong>Scene note:</strong><br>This version frames the Banqueting Hall stop as a royal approach rather than a solitary figure. The king remains central, with two side escorts and a banner bearer completing the procession.</div>
+          <div class="quote"><strong>Scene note:</strong><br>This version frames the Banqueting Hall stop as a royal approach rather than a solitary figure, while trimming back a few heavy settings that can upset Safari on iPhone.</div>
 
           <div class="legend-strip">
             <div class="legend-card">
-              <h3>Why this works better</h3>
-              <p>The model path is updated, the page styling is more cinematic, and the controls follow the same proven pattern as your newer working AOR page.</p>
+              <h3>What changed</h3>
+              <p>The model path is locked to banquet3king.glb, media preloading is lighter, and the opening scale is reduced for more reliable testing on phones.</p>
             </div>
             <div class="legend-card">
               <h3>Suggested visitor mood</h3>
-              <p>Formal, ceremonial, and authoritative. The group should feel like a moment of approach and power at Tara, not just a static character drop.</p>
+              <p>Formal, ceremonial, and authoritative. The group should still feel like a moment of approach and power at Tara.</p>
             </div>
             <div class="legend-card">
               <h3>Testing focus</h3>
-              <p>Check the group silhouette, banner visibility, AR launch behaviour, and whether the model scale still feels right on the target phone.</p>
+              <p>Check whether the model loads cleanly, whether audio plays, and whether AR launches without Safari crashing.</p>
             </div>
           </div>
 
           <div class="callout">
             <strong>Testing checklist:</strong>
             <ul>
-              <li>Does <strong>king3warriors.glb</strong> load immediately?</li>
+              <li>Does <strong>banquet3king.glb</strong> load immediately?</li>
               <li>Do the welcome and narration tracks both still play?</li>
               <li>Does the full-sequence button run the two audios in order?</li>
               <li>Does AR launch on the target phone?</li>
@@ -259,20 +247,21 @@
     </section>
   </main>
 
-  <audio id="welcomeAudio" preload="auto"><source src="./assets/audio/02_banquet.mp3" type="audio/mpeg"></audio>
-  <audio id="voiceAudio" preload="auto"><source src="./assets/audio/02_banquet_voice.mp3" type="audio/mpeg"></audio>
+  <audio id="welcomeAudio" preload="metadata"><source src="./assets/audio/02_banquet.mp3" type="audio/mpeg"></audio>
+  <audio id="voiceAudio" preload="metadata"><source src="./assets/audio/02_banquet_voice.mp3" type="audio/mpeg"></audio>
 
   <script>
     const viewer = document.getElementById('viewer');
     const statusBox = document.getElementById('arStatus');
     const scaleLabel = document.getElementById('scaleLabel');
+    const scaleSlider = document.getElementById('scaleSlider');
     const welcomeAudio = document.getElementById('welcomeAudio');
     const voiceAudio = document.getElementById('voiceAudio');
     let rotating = true;
     let royalOn = false;
 
     function setStatus(message) {
-      statusBox.textContent = 'Status: ' + message;
+      if (statusBox) statusBox.textContent = 'Status: ' + message;
     }
 
     function stopAllAudio() {
@@ -283,33 +272,36 @@
       });
     }
 
-    function launchAR() {
-      setStatus('trying to launch AR');
-      if (viewer && viewer.activateAR) {
-        viewer.activateAR();
-      } else {
-        setStatus('activateAR not available');
-      }
-    }
-
     function playAudio(id, okMsg, failMsg) {
       const audio = document.getElementById(id);
-      if (audio) {
-        audio.currentTime = 0;
-        audio.play().then(() => setStatus(okMsg)).catch(() => setStatus(failMsg));
-      } else {
+      if (!audio) {
         setStatus('audio element not found');
+        return;
       }
+      audio.currentTime = 0;
+      audio.play()
+        .then(() => setStatus(okMsg))
+        .catch(() => setStatus(failMsg));
     }
 
     function playWelcomeSequence() {
       stopAllAudio();
+      if (!welcomeAudio || !voiceAudio) {
+        setStatus('audio elements missing');
+        return;
+      }
+
+      welcomeAudio.onended = null;
+      voiceAudio.onended = null;
+
       welcomeAudio.play()
         .then(() => {
           setStatus('playing full sequence');
           welcomeAudio.onended = () => {
             voiceAudio.currentTime = 0;
-            voiceAudio.play().then(() => setStatus('playing narration after welcome')).catch(() => setStatus('narration audio could not play'));
+            voiceAudio.play()
+              .then(() => setStatus('playing narration after welcome'))
+              .catch(() => setStatus('narration audio could not play'));
             welcomeAudio.onended = null;
           };
         })
@@ -341,12 +333,12 @@
     function resetView() {
       if (!viewer) return;
       stopAllAudio();
-      viewer.scale = '1.6 1.6 1.6';
+      viewer.scale = '1.2 1.2 1.2';
       viewer.cameraOrbit = '0deg 78deg 105%';
       viewer.autoRotate = true;
       rotating = true;
-      document.getElementById('scaleSlider').value = 1.6;
-      scaleLabel.textContent = '1.6x';
+      if (scaleSlider) scaleSlider.value = 1.2;
+      if (scaleLabel) scaleLabel.textContent = '1.2x';
       setStatus('preview reset');
     }
 
