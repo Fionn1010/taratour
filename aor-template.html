@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AOR 8 · St Patrick and Goodbye</title>
-  <meta name="description" content="A final reflection at Tara, where Christian memory met an older sacred landscape." />
+  <title>AOR TEMPLATE · Hill of Tara</title>
+  <meta name="description" content="Reusable clean template matched to your current repo structure." />
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   <style>
 
@@ -105,9 +105,9 @@
 <body>
   <main class="shell">
     <section class="hero">
-      <div class="eyebrow">AOR 8 · St Patrick and Goodbye</div>
-      <h1>Where old Ireland met the new</h1>
-      <p class="lede">A final reflection at Tara, where Christian memory met an older sacred landscape.</p>
+      <div class="eyebrow">AOR X · STOP NAME</div>
+      <h1>PAGE HEADLINE HERE</h1>
+      <p class="lede">Reusable clean template matched to your current repo structure.</p>
       <div class="hero-actions">
         <a class="btn btn-secondary" href="./aor.html">← Back to tour launcher</a>
         <a class="btn btn-primary" href="#tour-stop">Open stop</a>
@@ -115,15 +115,15 @@
     </section>
 
     <section class="section" id="tour-stop">
-      <h2>AOR 8 · St Patrick and Goodbye</h2>
-      <p>Your repo does not currently show dedicated St Patrick model, audio, or video assets, so this repo-matched version uses the existing guide model as a placeholder and keeps the focus on a clean ending page.</p>
+      <h2>AOR X · STOP NAME</h2>
+      <p>Use the inline preview to inspect the model, then launch it in AR on supported phones.</p>
 
       <div class="grid">
         <div>
           <model-viewer
             id="viewer"
-            src="./assets/model/ar_guide.glb"
-            alt="Where old Ireland met the new"
+            src="./assets/model/YOUR_MODEL.glb"
+            alt="PAGE HEADLINE HERE"
             ar
             ar-modes="quick-look scene-viewer webxr"
             camera-controls
@@ -139,6 +139,9 @@
 
           <div class="controls">
             <button class="btn btn-primary" onclick="launchAR()">Launch AR</button>
+            <button class="btn btn-secondary" onclick="playSequence()">Play Full Sequence</button>
+            <button class="btn btn-secondary" onclick="playAudio('welcomeAudio','playing welcome audio','welcome audio could not play')">Play Welcome</button>
+            <button class="btn btn-secondary" onclick="playAudio('voiceAudio','playing narration audio','narration audio could not play')">Play Narration</button>
             <button class="btn btn-secondary" onclick="toggleRotation()">Toggle Rotation</button>
             <button class="btn btn-secondary" onclick="resetView()">Reset Preview</button>
           </div>
@@ -152,13 +155,12 @@
 
           <div class="note">
             <strong>Presentation note:</strong><br>
-            This final stop should feel reflective, complete, and quietly resolved after the journey across the hill.
+            Add a short note here about how this stop should feel for the visitor.
           </div>
 
-          <div class="callout">
-            <strong>Video:</strong><br>
-            No dedicated video file is currently assigned for this stop.
-          </div>
+          <video controls playsinline preload="none">
+            <source src="./assets/video/YOUR_VIDEO.mp4" type="video/mp4" />
+          </video>
         </div>
 
         <div class="panel">
@@ -167,43 +169,47 @@
           <div class="meta">
             <div class="metric">
               <span class="label">Model source</span>
-              <div class="value"><code>./assets/model/ar_guide.glb</code></div>
+              <div class="value"><code>./assets/model/YOUR_MODEL.glb</code></div>
             </div>
             <div class="metric">
               <span class="label">Video source</span>
-              <div class="value">None assigned</div>
+              <div class="value"><code>./assets/video/YOUR_VIDEO.mp4</code></div>
             </div>
             <div class="metric">
               <span class="label">Welcome audio</span>
-              <div class="value">None assigned</div>
+              <div class="value"><code>./assets/audio/YOUR_AUDIO.mp3</code></div>
             </div>
             <div class="metric">
               <span class="label">Narration audio</span>
-              <div class="value">None assigned</div>
+              <div class="value"><code>./assets/audio/YOUR_AUDIO_VOICE.mp3</code></div>
             </div>
           </div>
 
           <div class="callout">
             <strong>Scene note:</strong><br>
-            Until dedicated St Patrick assets are added, this page stays repo-matched by using the guide model already in the project and focusing on strong finish navigation.
+            Put your main dramatic or historical note here.
           </div>
 
           <div class="callout">
             <strong>Testing checklist:</strong><br>
-            1. Does the placeholder guide model load?<br>2. Does AR still work at the final stop?<br>3. Is the page stable without media?<br>4. Do both final buttons work as expected?
+            1. Does the model load?<br>2. Does AR launch?<br>3. Do both audio tracks play?<br>4. Does the next stop link work?
           </div>
         </div>
       </div>
 
       <div class="footer-nav">
-        <a class="btn btn-secondary" href="./aor.html">Finish Tour</a>
-        <a class="btn btn-primary" href="./aor1.html">Return to Start</a>
+        <a class="btn btn-secondary" href="./aor.html">← Back to launcher</a>
+        <a class="btn btn-primary" href="./NEXT_PAGE.html">Next stop →</a>
       </div>
     </section>
   </main>
 
-  <audio id="welcomeAudio"></audio>
-  <audio id="voiceAudio"></audio>
+  <audio id="welcomeAudio" preload="metadata">
+    <source src="./assets/audio/YOUR_AUDIO.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="voiceAudio" preload="metadata">
+    <source src="./assets/audio/YOUR_AUDIO_VOICE.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
     const viewer = document.getElementById('viewer');
