@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AOR 8 Safe · Palisade</title>
+  <meta name="description" content="iPhone-safe AR test page for palisade.glb." />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#0a0d12;
+      --bg2:#131a24;
+      --line:#2a3344;
+      --ink:#f2e8d6;
+      --muted:#bcae97;
+      --gold:#d9b679;
+      --gold2:#9f7743;
+      --shadow:0 22px 50px rgba(0,0,0,.38);
+      --r:24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg, var(--bg2), var(--bg));
+      overflow-x:hidden;
+    }
+    .shell{max-width:900px;margin:0 auto;padding:16px 12px 60px}
+    .card{
+      background:linear-gradient(180deg, rgba(22,29,42,.97) 0%, rgba(14,20,31,.98) 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:18px;
+      margin-bottom:16px;
+    }
+    .eyebrow{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(217,182,121,.28);
+      color:var(--gold);
+      background:#182131;
+      font-size:.88rem;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2rem,7vw,3rem);line-height:1}
+    p{color:var(--muted);line-height:1.6;margin:0 0 12px}
+    model-viewer{
+      width:100%;
+      height:430px;
+      border-radius:20px;
+      background:#05070a;
+      border:1px solid rgba(255,255,255,.06);
+      overflow:hidden;
+    }
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:14px 16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+      width:auto;
+    }
+    .btn-primary{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#140f09}
+    .btn-secondary{background:#1b2433;color:var(--ink);border:1px solid var(--line)}
+    .ar-inside-button{
+      position:absolute;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      z-index:10;
+      min-width:170px;
+    }
+    .status,.note{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      background:#111826;
+      border:1px solid var(--line);
+      color:#d9ceb8;
+      line-height:1.55;
+    }
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    @media (max-width:560px){
+      .card{padding:15px}
+      model-viewer{height:330px}
+      .btn{width:100%}
+      .ar-inside-button{width:auto;max-width:80%}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="card">
+      <div class="eyebrow">AOR 8 Safe · iPhone-friendly</div>
+      <h1>Palisade</h1>
+      <p>Palisade test model.</p>
+      <p><strong>Model:</strong> <code>./assets/model/palisade.glb</code></p>
+      <div class="controls">
+        <a class="btn btn-secondary" href="./aor_safe.html">← Safe launcher</a>
+        <button class="btn btn-primary" onclick="loadModel()">Load 3D Model</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <model-viewer
+        id="viewer"
+        alt="Palisade 3D model"
+        ar
+        ar-modes="quick-look scene-viewer webxr"
+        ar-placement="floor"
+        camera-controls
+        interaction-prompt="none"
+        reveal="manual"
+        loading="eager"
+        shadow-intensity="0.4"
+        exposure="0.8"
+        camera-orbit="0deg 75deg 120%"
+        scale="1 1 1">
+
+        <button slot="ar-button" class="btn btn-primary ar-inside-button">
+          Launch AR
+        </button>
+      </model-viewer>
+
+      <div class="controls">
+        <a class="btn btn-secondary" href="./aor7_safe.html">← Previous</a>
+        <a class="btn btn-secondary" href="./aor9_safe.html">Next →</a>
+        <button class="btn btn-secondary" onclick="resetView()">Reset View</button>
+        <button class="btn btn-secondary" onclick="unloadModel()">Unload Model</button>
+      </div>
+
+      <div class="status" id="statusBox">Status: model not loaded yet</div>
+
+      <div class="note">
+        <strong>iPhone-safe pattern:</strong><br>
+        1. Tap “Load 3D Model”.<br>
+        2. Launch AR using the button inside the model window.<br>
+        3. This avoids calling <code>viewer.activateAR()</code> from an external button.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+    const statusBox = document.getElementById('statusBox');
+    const modelPath = './assets/model/palisade.glb';
+
+    function setStatus(message) {
+      if (statusBox) statusBox.textContent = 'Status: ' + message;
+    }
+
+    function loadModel() {
+      if (!viewer) return;
+      if (viewer.getAttribute('src') === modelPath) {
+        setStatus('model already loaded');
+        return;
+      }
+      setStatus('loading model');
+      viewer.setAttribute('src', modelPath);
+    }
+
+    function unloadModel() {
+      if (!viewer) return;
+      viewer.removeAttribute('src');
+      setStatus('model unloaded');
+    }
+
+    function resetView() {
+      if (!viewer) return;
+      viewer.scale = '1 1 1';
+      viewer.cameraOrbit = '0deg 75deg 120%';
+      setStatus('view reset');
+    }
+
+    if (viewer) {
+      viewer.addEventListener('load', () => setStatus('model loaded inline'));
+      viewer.addEventListener('error', () => setStatus('model failed to load - check filename and path'));
+      viewer.addEventListener('ar-status', (event) => {
+        const detail = event.detail && event.detail.status ? event.detail.status : 'unknown';
+        setStatus('AR event: ' + detail);
+      });
+    }
+  </script>
+</body>
+</html>

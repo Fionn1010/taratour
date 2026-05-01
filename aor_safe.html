@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AOR Safe Launcher</title>
+  <meta name="description" content="Non-destructive safe launcher for AOR iPhone-friendly AR pages." />
+  <style>
+    :root{
+      --bg:#0a0d12;
+      --bg2:#131a24;
+      --line:#2a3344;
+      --ink:#f2e8d6;
+      --muted:#bcae97;
+      --gold:#d9b679;
+      --gold2:#9f7743;
+      --shadow:0 22px 50px rgba(0,0,0,.38);
+      --r:24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg, var(--bg2), var(--bg));
+    }
+    .shell{max-width:1000px;margin:0 auto;padding:18px 14px 70px}
+    .hero,.grid-wrap{
+      background:linear-gradient(180deg, rgba(22,29,42,.97) 0%, rgba(14,20,31,.98) 100%);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:22px;
+      margin-bottom:16px;
+    }
+    .eyebrow{
+      display:inline-block;padding:8px 12px;border-radius:999px;
+      border:1px solid rgba(217,182,121,.28);color:var(--gold);
+      background:#182131;font-size:.88rem;font-weight:700;margin-bottom:12px;
+    }
+    h1{margin:0 0 10px;font-size:clamp(2.2rem,7vw,3.5rem);line-height:1}
+    p{color:var(--muted);line-height:1.6;margin:0 0 12px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .stop-card{
+      display:block;
+      padding:16px;
+      border-radius:18px;
+      background:#111826;
+      border:1px solid var(--line);
+      text-decoration:none;
+      color:var(--ink);
+      min-height:120px;
+    }
+    .stop-card:hover{border-color:var(--gold)}
+    .stop-num{display:block;color:var(--gold);font-weight:700;margin-bottom:8px}
+    .stop-card strong{display:block;font-size:1.1rem;margin-bottom:8px}
+    .stop-card small{color:var(--muted);word-break:break-word}
+    code{background:#0f151f;padding:2px 6px;border-radius:6px}
+    @media (max-width:760px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Safe AOR Launcher</div>
+      <h1>Hill of Tara AR tests</h1>
+      <p>This launcher uses new filenames so your old pages stay untouched.</p>
+      <p><strong>New filename pattern:</strong> <code>aor1_safe.html</code> through <code>aor12_safe.html</code>.</p>
+      <p>Each page uses the iPhone-safe AR launch button inside <code>&lt;model-viewer&gt;</code>.</p>
+    </section>
+
+    <section class="grid-wrap">
+      <div class="grid">
+        
+      <a class="stop-card" href="./aor1_safe.html">
+        <span class="stop-num">AOR 1</span>
+        <strong>Entrance / Scene 1 Final</strong>
+        <small>Scene1final.glb</small>
+      </a>
+      <a class="stop-card" href="./aor2_safe.html">
+        <span class="stop-num">AOR 2</span>
+        <strong>Banqueting Hall</strong>
+        <small>02_banquet.glb</small>
+      </a>
+      <a class="stop-card" href="./aor3_safe.html">
+        <span class="stop-num">AOR 3</span>
+        <strong>Guide / High King</strong>
+        <small>ancient_irish_guide.glb</small>
+      </a>
+      <a class="stop-card" href="./aor4_safe.html">
+        <span class="stop-num">AOR 4</span>
+        <strong>Rath of the Synods</strong>
+        <small>rath_of_the_synods.glb</small>
+      </a>
+      <a class="stop-card" href="./aor5_safe.html">
+        <span class="stop-num">AOR 5</span>
+        <strong>Mound of the Hostages</strong>
+        <small>mound_of_the_hostages_orthostat.glb</small>
+      </a>
+      <a class="stop-card" href="./aor6_safe.html">
+        <span class="stop-num">AOR 6</span>
+        <strong>Stone of Destiny</strong>
+        <small>stone_of_destiny.glb</small>
+      </a>
+      <a class="stop-card" href="./aor7_safe.html">
+        <span class="stop-num">AOR 7</span>
+        <strong>Teach Cormaic</strong>
+        <small>teach_cormaic.glb</small>
+      </a>
+      <a class="stop-card" href="./aor8_safe.html">
+        <span class="stop-num">AOR 8</span>
+        <strong>Palisade</strong>
+        <small>palisade.glb</small>
+      </a>
+      <a class="stop-card" href="./aor9_safe.html">
+        <span class="stop-num">AOR 9</span>
+        <strong>Cormaic</strong>
+        <small>cormaic.glb</small>
+      </a>
+      <a class="stop-card" href="./aor10_safe.html">
+        <span class="stop-num">AOR 10</span>
+        <strong>Lia Fáil</strong>
+        <small>liafail.glb</small>
+      </a>
+      <a class="stop-card" href="./aor11_safe.html">
+        <span class="stop-num">AOR 11</span>
+        <strong>Scene 1 Final Test</strong>
+        <small>Scene1final.glb</small>
+      </a>
+      <a class="stop-card" href="./aor12_safe.html">
+        <span class="stop-num">AOR 12</span>
+        <strong>SC7tcfinal Test</strong>
+        <small>SC7tcfinal.glb</small>
+      </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
