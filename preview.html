@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hill of Tara Model Test Launcher</title>
+
+  <!-- Google model-viewer: gives reliable iPhone/Android AR launch button -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #06140d;
+      --panel: #0b2116;
+      --gold: #d6a85d;
+      --text: #f7f0df;
+      --muted: #c8bfa9;
+      --border: rgba(214,168,93,.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #12351f 0%, var(--bg) 55%, #020704 100%);
+      color: var(--text);
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 1.45;
+    }
+
+    header {
+      padding: 22px 16px 14px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,.24);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold);
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .sub {
+      margin: 8px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    main {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 40px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    select, button, a.button {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #10281a;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 10px 12px;
+      font-family: inherit;
+    }
+
+    button, a.button {
+      cursor: pointer;
+      background: linear-gradient(180deg, #d8ae68, #a97834);
+      color: #06140d;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .viewer-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(7,20,13,.92);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+
+    model-viewer {
+      width: 100%;
+      height: min(70vh, 620px);
+      min-height: 420px;
+      background: linear-gradient(180deg, #d9d1bd 0%, #6d7b61 100%);
+      --poster-color: transparent;
+    }
+
+    .info {
+      padding: 14px 16px 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .filename {
+      color: var(--gold);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .path {
+      color: var(--muted);
+      font-size: .92rem;
+      overflow-wrap: anywhere;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .mini {
+      border: 1px solid var(--border);
+      background: rgba(7,20,13,.7);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      text-align: left;
+    }
+
+    .mini.active {
+      outline: 2px solid var(--gold);
+      background: rgba(214,168,93,.15);
+    }
+
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      font-size: .95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hill of Tara Model Test Launcher</h1>
+    <p class="sub">Select a GLB model, preview it, then tap the built-in AR icon / button to test native AR launch on mobile.</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <select id="modelSelect" aria-label="Choose model"></select>
+      <button id="openArButton" type="button">Launch AR / View in Your Space</button>
+    </div>
+
+    <section class="viewer-card">
+      <model-viewer
+        id="viewer"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        ar
+        ar-modes="scene-viewer webxr quick-look"
+        shadow-intensity="1"
+        exposure="1"
+        alt="Hill of Tara test model">
+      </model-viewer>
+
+      <div class="info">
+        <div class="filename" id="currentName"></div>
+        <div class="path" id="currentPath"></div>
+        <a class="button" id="rawLink" href="#" target="_blank" rel="noopener">Open raw GLB file</a>
+      </div>
+    </section>
+
+    <div class="grid" id="modelGrid"></div>
+
+    <p class="note">
+      Upload this file to your GitHub Pages site root, for example as <strong>model-test-launcher.html</strong>. It uses relative paths like <strong>assets/model/test/SC7final.glb</strong>, so it should work from the root of your Tara tour site.
+    </p>
+  </main>
+
+  <script>
+    const BASE_PATH = 'assets/model/test/';
+
+    const models = [
+      '02_banquet.glb',
+      '2Banquet.glb',
+      '3charac.glb',
+      'Emerald Banner.glb',
+      'Green Gown Lady.glb',
+      'KFCHouse.glb',
+      'SC7final.glb',
+      'SC7tcfinal.glb',
+      'Scene 3.glb',
+      'Scene1final.glb',
+      'TatteredSunBanner.glb',
+      'stone-of-destiny.glb'
+    ];
+
+    const viewer = document.getElementById('viewer');
+    const select = document.getElementById('modelSelect');
+    const grid = document.getElementById('modelGrid');
+    const currentName = document.getElementById('currentName');
+    const currentPath = document.getElementById('currentPath');
+    const rawLink = document.getElementById('rawLink');
+    const openArButton = document.getElementById('openArButton');
+
+    function modelUrl(fileName) {
+      return BASE_PATH + encodeURIComponent(fileName).replace(/%2F/g, '/');
+    }
+
+    function setModel(fileName) {
+      const url = modelUrl(fileName);
+      viewer.src = url;
+      currentName.textContent = fileName;
+      currentPath.textContent = url;
+      rawLink.href = url;
+      select.value = fileName;
+
+      document.querySelectorAll('.mini').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.file === fileName);
+      });
+    }
+
+    models.forEach(fileName => {
+      const option = document.createElement('option');
+      option.value = fileName;
+      option.textContent = fileName;
+      select.appendChild(option);
+
+      const btn = document.createElement('button');
+      btn.className = 'mini';
+      btn.type = 'button';
+      btn.dataset.file = fileName;
+      btn.textContent = fileName;
+      btn.addEventListener('click', () => setModel(fileName));
+      grid.appendChild(btn);
+    });
+
+    select.addEventListener('change', () => setModel(select.value));
+
+    openArButton.addEventListener('click', async () => {
+      try {
+        if (viewer.canActivateAR) {
+          await viewer.activateAR();
+        } else {
+          alert('AR is not available in this browser/device. Try Safari on iPhone or Chrome on Android.');
+        }
+      } catch (err) {
+        alert('Could not launch AR from the custom button. Try the built-in AR icon in the model viewer.');
+      }
+    });
+
+    viewer.addEventListener('error', () => {
+      alert('This model could not be loaded. Check filename, path, file size, and whether the GLB is valid.');
+    });
+
+    setModel(models[0]);
+  </script>
+</body>
+</html>
