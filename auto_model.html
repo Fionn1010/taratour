@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hill of Tara AR Model Launcher</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#06130d; --panel:#0b2016; --panel2:#102b1e; --gold:#d8aa58;
+      --text:#f7f0df; --muted:#cdbf9e; --line:rgba(216,170,88,.32);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Georgia, 'Times New Roman', serif;background:radial-gradient(circle at top,#102f20 0,#06130d 45%,#020705 100%);color:var(--text)}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(6,19,13,.98),rgba(6,19,13,.9));border-bottom:1px solid var(--line);padding:14px 14px 12px;backdrop-filter:blur(8px)}
+    .title{display:flex;gap:10px;align-items:center;justify-content:space-between;max-width:1180px;margin:auto}
+    h1{font-size:clamp(22px,5vw,38px);letter-spacing:.06em;margin:0;color:var(--gold);font-weight:500;text-transform:uppercase}
+    .sub{max-width:1180px;margin:6px auto 0;color:var(--muted);font-size:14px;line-height:1.35}
+    .controls{max-width:1180px;margin:12px auto 0;display:flex;gap:8px;align-items:center}
+    input{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:#07150f;color:var(--text);font-size:16px;outline:none}
+    button,.btn{border:1px solid var(--line);background:linear-gradient(#1a3a28,#0d2117);color:var(--text);border-radius:14px;padding:12px 14px;font-size:15px;text-decoration:none;cursor:pointer;white-space:nowrap}
+    button:hover,.btn:hover{border-color:var(--gold)}
+    main{max-width:1180px;margin:auto;padding:16px 12px 40px}
+    .status{color:var(--muted);padding:10px 2px 16px;font-size:14px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+    .card{background:linear-gradient(180deg,rgba(16,43,30,.96),rgba(8,23,16,.96));border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,.3)}
+    model-viewer{width:100%;height:260px;background:linear-gradient(180deg,#eadfc7,#b9ad93);--poster-color:#e9deca}
+    .info{padding:12px}
+    .name{font-size:17px;color:#fff;margin:0 0 5px;word-break:break-word}
+    .meta{color:var(--muted);font-size:13px;margin-bottom:10px}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .full{grid-column:1/-1;text-align:center}
+    .note{margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.18);color:var(--muted);font-size:14px;line-height:1.45}
+    .empty{padding:24px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
+    @media(max-width:560px){
+      header{padding:12px 10px}.controls{flex-wrap:wrap}.controls button{flex:1}main{padding:12px 9px 30px}.grid{grid-template-columns:1fr;gap:12px}model-viewer{height:320px}.actions{grid-template-columns:1fr}.title{display:block}.sub{font-size:13px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title"><h1>Hill of Tara AR Models</h1><button id="refreshBtn" type="button">Refresh</button></div>
+    <div class="sub">Auto-detects GLB files from <strong>assets/model/test</strong>, creates a mobile-friendly thumbnail grid, and uses the built-in model-viewer AR launch button.</div>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search models… e.g. cormaic, stone, scene" />
+      <button id="sortBtn" type="button">Sort A–Z</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="status" class="status">Loading models…</div>
+    <section id="grid" class="grid"></section>
+    <div class="note">
+      <strong>Tip:</strong> Android usually launches GLB files into AR with Scene Viewer. iPhone Safari normally needs a USDZ file for native Quick Look AR, so GLB files may only preview unless you also add matching USDZ versions later.
+    </div>
+  </main>
+
+<script>
+const REPO_OWNER = 'Fionn1010';
+const REPO_NAME = 'taratour';
+const BRANCH = 'main';
+const FOLDER = 'assets/model/test';
+const PAGES_BASE = 'https://fionn1010.github.io/taratour/';
+const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FOLDER}?ref=${BRANCH}`;
+
+const FALLBACK = [
+  '02_banquet.glb','2Banquet.glb','3charac.glb','Emerald Banner.glb','Green Gown Lady.glb',
+  'KFCHouse.glb','SC7final.glb','SC7tcfinal.glb','Scene 3.glb','Scene1final.glb',
+  'SynodsNew.glb','TatteredSunBanner.glb','cormaic.glb','stone-of-destiny.glb'
+];
+
+let models = [];
+let sortAZ = true;
+const grid = document.getElementById('grid');
+const statusEl = document.getElementById('status');
+const searchEl = document.getElementById('search');
+const sortBtn = document.getElementById('sortBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+
+function encodePath(path){
+  return path.split('/').map(encodeURIComponent).join('/');
+}
+function publicUrl(name){
+  return PAGES_BASE + encodePath(`${FOLDER}/${name}`);
+}
+function prettyName(name){
+  return name.replace(/\.glb$/i,'').replace(/[-_]/g,' ');
+}
+function sizeLabel(bytes){
+  if(!bytes) return '';
+  const mb = bytes / 1024 / 1024;
+  return `${mb.toFixed(1)} MB`;
+}
+
+async function loadModels(){
+  statusEl.textContent = 'Loading models from GitHub…';
+  grid.innerHTML = '';
+  try{
+    const res = await fetch(API_URL, {cache:'no-store'});
+    if(!res.ok) throw new Error(`GitHub API returned ${res.status}`);
+    const data = await res.json();
+    models = data
+      .filter(item => item.type === 'file' && /\.glb$/i.test(item.name))
+      .map(item => ({name:item.name, size:item.size || 0}));
+    statusEl.textContent = `Detected ${models.length} GLB model${models.length === 1 ? '' : 's'} from GitHub.`;
+  }catch(err){
+    models = FALLBACK.map(name => ({name, size:0}));
+    statusEl.textContent = `Could not auto-read the folder, using fallback list of ${models.length} models. ${err.message}`;
+  }
+  render();
+}
+
+function render(){
+  const q = searchEl.value.trim().toLowerCase();
+  let list = models.filter(m => m.name.toLowerCase().includes(q));
+  list.sort((a,b) => sortAZ ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+  grid.innerHTML = '';
+  if(!list.length){
+    grid.innerHTML = '<div class="empty">No matching GLB models found.</div>';
+    return;
+  }
+  for(const model of list){
+    const url = publicUrl(model.name);
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <model-viewer
+        src="${url}"
+        alt="${model.name}"
+        ar
+        ar-modes="scene-viewer webxr quick-look"
+        camera-controls
+        touch-action="pan-y"
+        shadow-intensity="0.8"
+        exposure="1"
+        auto-rotate
+        loading="lazy"
+        reveal="auto">
+        <button slot="ar-button" class="btn" style="position:absolute;right:12px;bottom:12px;">View in AR</button>
+      </model-viewer>
+      <div class="info">
+        <p class="name">${prettyName(model.name)}</p>
+        <div class="meta">${model.name}${model.size ? ' · ' + sizeLabel(model.size) : ''}</div>
+        <div class="actions">
+          <a class="btn" href="${url}" target="_blank" rel="noopener">Open file</a>
+          <button type="button" onclick="copyText('${url.replace(/'/g, "\\'")}')">Copy URL</button>
+          <a class="btn full" href="?model=${encodeURIComponent(model.name)}">Single model view</a>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  }
+}
+
+window.copyText = async function(text){
+  try{ await navigator.clipboard.writeText(text); alert('Model URL copied'); }
+  catch(e){ prompt('Copy this model URL:', text); }
+}
+
+function maybeSingleModel(){
+  const params = new URLSearchParams(location.search);
+  const chosen = params.get('model');
+  if(!chosen) return false;
+  const name = decodeURIComponent(chosen);
+  document.body.innerHTML = `
+    <header><div class="title"><h1>${prettyName(name)}</h1><a class="btn" href="${location.pathname}">Back to grid</a></div><div class="sub">Single model AR test</div></header>
+    <main style="max-width:760px"><article class="card"><model-viewer src="${publicUrl(name)}" ar ar-modes="scene-viewer webxr quick-look" camera-controls auto-rotate shadow-intensity="0.8" exposure="1" style="height:72vh"><button slot="ar-button" class="btn" style="position:absolute;left:50%;transform:translateX(-50%);bottom:18px;font-size:18px;padding:14px 22px">View in AR</button></model-viewer><div class="info"><p class="name">${name}</p><a class="btn full" href="${publicUrl(name)}" target="_blank">Open raw model file</a></div></article></main>`;
+  return true;
+}
+
+searchEl.addEventListener('input', render);
+sortBtn.addEventListener('click', () => { sortAZ = !sortAZ; sortBtn.textContent = sortAZ ? 'Sort A–Z' : 'Sort Z–A'; render(); });
+refreshBtn.addEventListener('click', loadModels);
+
+if(!maybeSingleModel()) loadModels();
+</script>
+</body>
+</html>
