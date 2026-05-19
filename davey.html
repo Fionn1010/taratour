@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hill of Tara Model Test Launcher</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{
+      --bg:#07140f; --panel:#10251c; --gold:#d6a85e; --text:#f5ead8; --muted:#c9b99c;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Georgia, 'Times New Roman', serif;background:linear-gradient(180deg,#06110d,#10251c);color:var(--text)}
+    header{padding:20px 16px;text-align:center;border-bottom:1px solid rgba(214,168,94,.35)}
+    h1{margin:0;color:var(--gold);letter-spacing:.06em;font-size:clamp(24px,5vw,42px)}
+    p{color:var(--muted);line-height:1.45}
+    main{max-width:1100px;margin:0 auto;padding:16px;display:grid;gap:16px;grid-template-columns:320px 1fr}
+    .card{background:rgba(16,37,28,.86);border:1px solid rgba(214,168,94,.35);border-radius:16px;padding:14px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .list{display:grid;gap:8px}
+    button{width:100%;text-align:left;padding:12px 10px;border-radius:12px;border:1px solid rgba(214,168,94,.25);background:#0b1b14;color:var(--text);font-size:15px;cursor:pointer}
+    button:hover,button.active{border-color:var(--gold);background:#173526}
+    model-viewer{width:100%;height:68vh;min-height:420px;background:#e9e4da;border-radius:14px;overflow:hidden}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .actions a{display:inline-block;padding:10px 12px;border:1px solid rgba(214,168,94,.55);border-radius:10px;color:var(--gold);text-decoration:none;background:#0b1b14}
+    code{color:#f3d08a;word-break:break-all}
+    @media (max-width:800px){main{grid-template-columns:1fr}model-viewer{height:60vh;min-height:360px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hill of Tara Model Test Launcher</h1>
+    <p>Preview each GLB and use the built-in AR button on mobile.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Models</h2>
+      <div id="modelList" class="list"></div>
+      <p style="font-size:13px">Folder: <code>assets/model/test/</code></p>
+    </section>
+
+    <section class="card">
+      <h2 id="modelTitle">Loading...</h2>
+      <model-viewer id="viewer"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        ar
+        ar-modes="scene-viewer webxr quick-look"
+        shadow-intensity="1"
+        exposure="1"
+        environment-image="neutral"
+        alt="Hill of Tara 3D model test">
+      </model-viewer>
+      <div class="actions">
+        <a id="openModel" href="#" target="_blank" rel="noopener">Open GLB directly</a>
+        <a id="copyPath" href="#">Copy model path</a>
+      </div>
+      <p id="status"></p>
+    </section>
+  </main>
+
+  <script>
+    const basePath = './assets/model/test/';
+    const models = [
+      '02_banquet.glb',
+      '2Banquet.glb',
+      '3charac.glb',
+      'Emerald Banner.glb',
+      'Green Gown Lady.glb',
+      'KFCHouse.glb',
+      'SC7final.glb',
+      'SC7tcfinal.glb',
+      'Scene 3.glb',
+      'Scene1final.glb',
+      'TatteredSunBanner.glb',
+      'stone-of-destiny.glb'
+    ];
+
+    const list = document.getElementById('modelList');
+    const viewer = document.getElementById('viewer');
+    const title = document.getElementById('modelTitle');
+    const openModel = document.getElementById('openModel');
+    const copyPath = document.getElementById('copyPath');
+    const status = document.getElementById('status');
+
+    function encodedPath(file) {
+      return basePath + file.split('/').map(encodeURIComponent).join('/');
+    }
+
+    function loadModel(file, btn) {
+      const src = encodedPath(file);
+      viewer.src = src;
+      title.textContent = file;
+      openModel.href = src;
+      status.innerHTML = 'Loaded: <code>' + src + '</code>';
+      document.querySelectorAll('button[data-model]').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    models.forEach((file, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.model = file;
+      btn.textContent = `${index + 1}. ${file}`;
+      btn.addEventListener('click', () => loadModel(file, btn));
+      list.appendChild(btn);
+    });
+
+    copyPath.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await navigator.clipboard.writeText(viewer.src);
+        status.textContent = 'Copied model path.';
+      } catch (err) {
+        status.textContent = 'Copy failed. Long-press the direct GLB link instead.';
+      }
+    });
+
+    viewer.addEventListener('error', () => {
+      status.textContent = 'Model failed to load. Check filename, file size, and GitHub path.';
+    });
+
+    loadModel(models[0], document.querySelector('button[data-model]'));
+  </script>
+</body>
+</html>
