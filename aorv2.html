@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hill of Tara · AOR Walking Tour V2</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    :root{--bg:#0d120f;--card:#151d18;--text:#f5f1e8;--muted:#c8c0aa;--line:#344138;--accent:#d7b56d;--ok:#8fd17c;--bad:#ff9b8d;}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#0a100c,#18231b);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    header{position:sticky;top:0;z-index:5;padding:14px 16px;background:rgba(13,18,15,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    h1{font-size:19px;margin:0 0 4px} .sub{font-size:13px;color:var(--muted)}
+    main{max-width:760px;margin:auto;padding:14px 14px 90px}.card{background:rgba(21,29,24,.94);border:1px solid var(--line);border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:13px}.big{font-size:28px;font-weight:800}.muted{color:var(--muted)}
+    button,a.btn{appearance:none;border:0;border-radius:14px;padding:12px 14px;background:var(--accent);color:#17120a;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:45px}button.secondary,a.secondary{background:#243127;color:var(--text);border:1px solid var(--line)}button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+    model-viewer{width:100%;height:52vh;min-height:360px;background:radial-gradient(circle at 50% 40%,#2b372e,#111813);border-radius:16px;overflow:hidden}.ar-tip{font-size:13px;color:var(--muted);margin-top:8px}
+    .stops{display:grid;grid-template-columns:1fr;gap:8px}.stop{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:14px;background:#101812}.stop.active{outline:2px solid var(--accent)}.num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#263328;color:var(--accent);font-weight:900}.distance{font-size:13px;color:var(--muted);text-align:right}
+    .direction{display:grid;place-items:center;margin:8px auto;width:118px;height:118px;border:2px solid var(--line);border-radius:50%;background:#101812}.arrow{font-size:58px;transform:rotate(0deg);transition:transform .25s ease}.notice{font-size:13px;color:var(--muted);line-height:1.45}.ok{color:var(--ok)}.bad{color:var(--bad)}
+    footer{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(13,18,15,.94);border-top:1px solid var(--line);padding:10px 14px env(safe-area-inset-bottom);display:flex;gap:8px;justify-content:center}footer button{flex:1;max-width:240px}
+  </style>
+</head>
+<body>
+<header><h1>Hill of Tara · AOR Walking Tour V2</h1><div class="sub">Low-poly AR model preview plus simple walking guidance between stops.</div></header>
+<main>
+  <section class="card">
+    <div class="row"><div><div class="muted">Current stop</div><div id="stopTitle" class="big">Loading…</div></div><span id="gpsState" class="pill">GPS off</span></div>
+    <p id="stopText" class="notice"></p>
+    <div class="row"><button id="gpsBtn">Use my location</button><button id="nearestBtn" class="secondary">Find nearest stop</button><a id="openMap" class="btn secondary" target="_blank" rel="noopener">Open map</a></div>
+  </section>
+
+  <section class="card">
+    <model-viewer id="viewer" camera-controls touch-action="pan-y" auto-rotate ar ar-modes="scene-viewer quick-look webxr" shadow-intensity="1" exposure="1" alt="AR model for this Hill of Tara stop"></model-viewer>
+    <div class="ar-tip">Use the native AR icon inside the model preview. This avoids the custom launch-button crashes we saw before.</div>
+    <div class="row" style="margin-top:10px"><button id="prevBtn" class="secondary">← Previous</button><button id="nextBtn">Next stop →</button></div>
+  </section>
+
+  <section class="card">
+    <div class="row"><div><div class="muted">Guide to next stop</div><div id="nextTitle" class="big">—</div></div><span id="dist" class="pill">—</span></div>
+    <div class="direction"><div id="arrow" class="arrow">↑</div></div>
+    <p id="guideText" class="notice">Turn on location to show approximate distance and direction. Visitors should still follow the visible paths and site signage.</p>
+  </section>
+
+  <section class="card"><h2 style="margin:0 0 10px;font-size:18px">Tour stops</h2><div id="stopList" class="stops"></div></section>
+</main>
+<footer><button id="playNarration" class="ghost">Play narration</button><button id="copyLink" class="ghost">Copy stop link</button></footer>
+<script>
+const STOPS = [
+  {id:1,name:'Entrance',slug:'entrance',lat:53.57895,lng:-6.61117,model:'./assets/model/ar_guide.glb',usdz:'./assets/model/ar_guide.usdz',audio:'./assets/audio/01_entrance_voice.mp3',text:'Begin at the entrance sign. This is the visitor threshold before walking onto the sacred hill.'},
+  {id:2,name:'Banqueting Hall',slug:'banquet',lat:53.57955,lng:-6.61172,model:'./assets/model/banquet.glb',usdz:'./assets/model/banquet.usdz',audio:'./assets/audio/02_banquet_voice.mp3',text:'Walk left from the entrance and follow the processional landscape toward the Banqueting Hall.'},
+  {id:3,name:'Palisade',slug:'palisade',lat:53.58018,lng:-6.61105,model:'./assets/model/palisade.glb',usdz:'./assets/model/palisade.usdz',audio:'./assets/audio/03_palisade_voice.mp3',text:'The timber circle scene helps visitors imagine the huge ritual enclosure around Rath of the Synods.'},
+  {id:4,name:'Rath of the Synods',slug:'synods',lat:53.58038,lng:-6.61063,model:'./assets/model/synods.glb',usdz:'./assets/model/synods.usdz',audio:'./assets/audio/04_synods_voice.mp3',text:'A ritual blessing scene with the king, warriors, and druids.'},
+  {id:5,name:'Mound of the Hostages',slug:'mound',lat:53.58062,lng:-6.61003,model:'./assets/model/orthostat.glb',usdz:'./assets/model/orthostat.usdz',audio:'./assets/audio/05_mound_voice.mp3',text:'A quieter ancestral stop beside the passage tomb.'},
+  {id:6,name:'Stone of Destiny',slug:'liafail',lat:53.58089,lng:-6.60974,model:'./assets/model/liafail.glb',usdz:'./assets/model/liafail.usdz',audio:'./assets/audio/06_stone_voice.mp3',text:'The Choosing: the tall Lia Fáil scene marks the transformation of the king.'},
+  {id:7,name:'Teach Cormaic',slug:'cormaic',lat:53.58105,lng:-6.60928,model:'./assets/model/cormaic.glb',usdz:'./assets/model/cormaic.usdz',audio:'./assets/audio/07_cormaic_voice.mp3',text:'Chock Cormuck: recognition, gathering, and celebration after the choosing.'},
+  {id:8,name:'St Patrick & Church',slug:'patrick',lat:53.57894,lng:-6.60965,model:'./assets/model/stpatrick.glb',usdz:'./assets/model/stpatrick.usdz',audio:'./assets/audio/08_patrick_voice.mp3',text:'Finish near St Patrick’s statue and church, linking the older royal landscape with later Christian memory.'}
+];
+let current = Math.max(0, Number(new URLSearchParams(location.search).get('stop') || 1)-1);
+let userPos = null, watchId = null, audio = new Audio();
+const $ = id => document.getElementById(id);
+function rad(d){return d*Math.PI/180} function deg(r){return r*180/Math.PI}
+function distance(a,b){const R=6371000,dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng),lat1=rad(a.lat),lat2=rad(b.lat);const x=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function bearing(a,b){const y=Math.sin(rad(b.lng-a.lng))*Math.cos(rad(b.lat));const x=Math.cos(rad(a.lat))*Math.sin(rad(b.lat))-Math.sin(rad(a.lat))*Math.cos(rad(b.lat))*Math.cos(rad(b.lng-a.lng));return (deg(Math.atan2(y,x))+360)%360;}
+function fmt(m){return m<1000?`${Math.round(m)} m`:`${(m/1000).toFixed(1)} km`}
+function render(){
+  const s=STOPS[current], n=STOPS[Math.min(current+1,STOPS.length-1)];
+  $('stopTitle').textContent=`${s.id}. ${s.name}`; $('stopText').textContent=s.text; $('viewer').src=s.model; $('viewer').iosSrc=s.usdz; $('openMap').href=`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=walking`;
+  $('nextTitle').textContent=current===STOPS.length-1?'Tour complete':`${n.id}. ${n.name}`; $('prevBtn').disabled=current===0; $('nextBtn').disabled=current===STOPS.length-1;
+  history.replaceState(null,'',`?stop=${s.id}`); renderList(); updateGuide();
+}
+function renderList(){ $('stopList').innerHTML=STOPS.map((s,i)=>`<button class="stop ${i===current?'active':''}" data-i="${i}"><span class="num">${s.id}</span><span><b>${s.name}</b><br><span class="muted">${s.text}</span></span><span class="distance">${userPos?fmt(distance(userPos,s)):'—'}</span></button>`).join(''); document.querySelectorAll('.stop').forEach(b=>b.onclick=()=>{current=+b.dataset.i;render();scrollTo(0,0)}); }
+function updateGuide(){
+  if(!userPos){$('dist').textContent='GPS needed';$('guideText').textContent='Turn on location to show approximate distance and direction. Visitors should still follow the visible paths and site signage.';return;}
+  const target=STOPS[current], d=distance(userPos,target), br=bearing(userPos,target); $('dist').textContent=fmt(d); $('arrow').style.transform=`rotate(${br}deg)`;
+  $('gpsState').innerHTML=`<span class="ok">GPS on</span>`; $('guideText').textContent=d<25?'You are very close to this stop. Open the model preview and use the native AR icon.':`Walk roughly ${fmt(d)} toward ${Math.round(br)}°. Use this as a gentle guide, not a strict route.`; renderList();
+}
+$('gpsBtn').onclick=()=>{ if(!navigator.geolocation){$('gpsState').innerHTML='<span class="bad">No GPS</span>';return;} if(watchId) navigator.geolocation.clearWatch(watchId); watchId=navigator.geolocation.watchPosition(p=>{userPos={lat:p.coords.latitude,lng:p.coords.longitude};updateGuide();},e=>{$('gpsState').innerHTML='<span class="bad">GPS blocked</span>';$('guideText').textContent=e.message;},{enableHighAccuracy:true,maximumAge:5000,timeout:12000}); };
+$('nearestBtn').onclick=()=>{ if(!userPos){$('gpsBtn').click();return;} let best=0,bestD=Infinity; STOPS.forEach((s,i)=>{const d=distance(userPos,s); if(d<bestD){bestD=d;best=i;}}); current=best; render(); };
+$('prevBtn').onclick=()=>{current=Math.max(0,current-1);render();}; $('nextBtn').onclick=()=>{current=Math.min(STOPS.length-1,current+1);render();};
+$('playNarration').onclick=()=>{const s=STOPS[current]; audio.pause(); audio=new Audio(s.audio); audio.play().catch(()=>alert('Tap once more if your phone blocked audio autoplay.'));};
+$('copyLink').onclick=async()=>{await navigator.clipboard.writeText(location.href); $('copyLink').textContent='Copied'; setTimeout(()=>$('copyLink').textContent='Copy stop link',1200)};
+render();
+</script>
+</body>
+</html>
