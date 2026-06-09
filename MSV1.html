@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hill of Tara – Museum Style V1</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#f7f4ee;
+--card:#ffffff;
+--text:#1d1d1d;
+--muted:#666;
+--gold:#b8860b;
+--line:#e6dfd2;
+}
+body{
+margin:0;
+background:var(--bg);
+font-family:Inter,sans-serif;
+color:var(--text);
+}
+.hero{
+height:45vh;
+min-height:320px;
+background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)), url('hero.jpg') center/cover;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+color:white;
+padding:20px;
+}
+.hero h1{
+font-family:'Cormorant Garamond',serif;
+font-size:4rem;
+margin:0;
+}
+.hero p{font-size:1.2rem;}
+.btn{
+display:inline-block;
+background:var(--gold);
+color:white;
+padding:14px 24px;
+border-radius:14px;
+text-decoration:none;
+font-weight:600;
+}
+.container{max-width:900px;margin:auto;padding:20px;}
+.card{
+background:var(--card);
+border:1px solid var(--line);
+border-radius:20px;
+padding:20px;
+margin-bottom:18px;
+box-shadow:0 4px 16px rgba(0,0,0,.05);
+}
+.stop-title{
+font-family:'Cormorant Garamond',serif;
+font-size:2.2rem;
+margin:0 0 10px;
+}
+.image{
+height:220px;
+background:#ddd;
+border-radius:16px;
+margin-bottom:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#777;
+}
+.actions{display:flex;gap:12px;flex-wrap:wrap;}
+.secondary{
+background:#222;
+}
+.progress{
+display:flex;
+gap:10px;
+justify-content:center;
+margin:15px 0;
+}
+.dot{
+width:16px;height:16px;border-radius:50%;
+background:#d9d1c1;
+}
+.dot.active{background:var(--gold);}
+.next{
+font-size:1.4rem;
+font-family:'Cormorant Garamond',serif;
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+<div>
+<h1>Hill of Tara</h1>
+<p>Seat of the High Kings of Ireland</p>
+<a class="btn" href="#">Begin Your Journey</a>
+</div>
+</section>
+
+<div class="container">
+
+<div class="card">
+<div style="color:var(--gold);font-weight:600;">CURRENT STOP</div>
+<h2 class="stop-title">The Banqueting Hall</h2>
+<div class="image">Replace with AI artwork of the ceremonial earthwork</div>
+<p>Walk along the ceremonial earth banks where gatherings, feasting and royal processions once took place.</p>
+
+<div class="actions">
+<a class="btn" href="#">🎧 Listen to Story</a>
+<a class="btn secondary" href="#">👑 View in AR</a>
+</div>
+</div>
+
+<div class="card">
+<div style="color:var(--gold);font-weight:600;">NEXT STOP</div>
+<div class="next">Rath of the Synods</div>
+<p><strong>120 metres • Approx. 2 minute walk</strong></p>
+<p>Follow the visible pathway uphill towards the heart of royal Tara.</p>
+</div>
+
+<div class="card">
+<div style="text-align:center;color:var(--gold);font-weight:600;">JOURNEY THROUGH TARA</div>
+<div class="progress">
+<div class="dot active"></div>
+<div class="dot active"></div>
+<div class="dot active"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
+<p style="text-align:center;">3 of 8 stops completed</p>
+</div>
+
+</div>
+</body>
+</html>
